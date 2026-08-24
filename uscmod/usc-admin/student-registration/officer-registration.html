@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Officer - USC Admin</title>
+  <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+  <link rel="stylesheet" href="css/student-registration.css" />
+  <script src="../../shared/app-config.js"></script>
+</head>
+<body>
+  <main class="page">
+    <div class="top-row no-print">
+      <a href="../admin-dashboard/users.html" class="back-link">← Back to User Directory</a>
+      <span class="mode-badge">ADMIN OFFICER PROVISIONING</span>
+    </div>
+
+    <section class="panel no-print">
+      <h1>Create USC Officer Account</h1>
+      <p>Create a school-issued officer login directly from the Admin Dashboard. The officer receives a temporary password and an institutional-email verification link.</p>
+      <div id="officerStatus" class="status-box ok">Officer account provisioning is ready.</div>
+
+      <form id="officerForm" class="form-grid">
+        <label>Student ID<input id="officerStudentId" inputmode="numeric" maxlength="6" placeholder="260001" required /></label>
+        <label>Full Name<input id="officerName" placeholder="Juan Dela Cruz" required /></label>
+        <label>Institutional Email<input id="officerEmail" type="email" placeholder="juan.delacruz@ssu.edu.ph" required /></label>
+        <label>USC Position
+          <select id="officerPosition" required>
+            <option value="">Select officer position</option>
+            <option>President</option>
+            <option>Vice President</option>
+            <option>Secretary</option>
+            <option>Treasurer</option>
+            <option>Auditor</option>
+            <option>Public Relations Officer (PRO)</option>
+            <option>Business Manager</option>
+            <option>Sgt. at Arms</option>
+            <option>Department Representative</option>
+          </select>
+        </label>
+        <label>College / Campus
+          <select id="officerCollege" required><option value="">Select college or campus</option></select>
+        </label>
+        <label class="program-field">Program
+          <select id="officerProgram" required disabled><option value="">Select college/campus first</option></select>
+          <small>Programs follow the SSU program list already used by student registration.</small>
+        </label>
+        <label>Year Level
+          <select id="officerYearLevel" required>
+            <option value="">Select year level</option><option value="1st Year">1st Year</option><option value="2nd Year">2nd Year</option><option value="3rd Year">3rd Year</option><option value="4th Year">4th Year</option><option value="5th Year">5th Year</option>
+          </select>
+        </label>
+        <label>Student Standing
+          <select id="officerStudentStanding" required>
+            <option value="active">Active / Enrolled</option><option value="leave">Leave of Absence</option>
+            <option value="inactive">Inactive / Not Enrolled</option><option value="graduated">Graduated</option><option value="transferred">Transferred / Changed School</option><option value="withdrawn">Withdrawn</option><option value="eliminated">Eliminated / Dismissed</option>
+          </select>
+        </label>
+        <label>Election Eligibility
+          <select id="officerEligibility"><option value="true">Eligible voter</option><option value="false">Officer account only / not eligible</option></select>
+        </label>
+        <label>Role Effective Date<input id="officerEffectiveDate" type="date" required /></label>
+        <div class="form-action"><button id="createOfficerBtn" type="submit">Create Officer Account</button></div>
+      </form>
+    </section>
+
+    <section class="panel no-print">
+      <h2>Officer Password Recovery</h2>
+      <p>Send a Firebase password-reset link to the officer's institutional email.</p>
+      <div class="reset-row">
+        <input id="officerResetIdentifier" placeholder="Student ID or institutional email" />
+        <button id="officerResetBtn" type="button">Send Password Reset Link</button>
+      </div>
+    </section>
+
+    <section id="officerSlipSection" class="slip-section" hidden>
+      <div id="officerSlip"></div>
+      <div class="slip-actions no-print">
+        <button id="printOfficerSlipBtn" type="button">Print Officer Login Slip</button>
+        <button id="downloadOfficerSlipBtn" type="button">Download Login Slip</button>
+        <button id="clearOfficerSlipBtn" type="button" class="secondary">Clear</button>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+  <script type="module" src="js/officer-registration.js"></script>
+</body>
+</html>

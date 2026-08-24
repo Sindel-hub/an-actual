@@ -1,0 +1,7 @@
+Samar State University undergraduate program dropdown
+
+Source basis:
+- Official Samar State University article dated September 3, 2025: "SSU achieves 100% COPC compliance across all undergrad programs."
+- The article lists 41 CHED-compliant undergraduate programs across the College of Education, College of Arts and Sciences, College of Nursing and Health Sciences, College of Engineering, College of Industrial Technology, SSU Mercedes Campus, and SSU Paranas Campus.
+
+The July 22, 2026 SSU article reports Bachelor of Public Administration and BS Environmental Science undergoing CHED program/institutional monitoring and validation. They are not included in this dropdown yet because the 2025 COPC list is the cleanest officially published complete program-to-college/campus mapping. Add them after the school confirms their final college/campus mapping and operating status.

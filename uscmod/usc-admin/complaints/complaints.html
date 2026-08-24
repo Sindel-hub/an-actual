@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USC Complaint Module</title>
+  <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+  <link rel="stylesheet" href="css/complaints.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+
+<body class="officer-app-shell">
+  <div class="page">
+    <div class="page-label">Dashboard</div>
+
+    <div class="app-shell">
+      <header class="top-banner">
+        <div class="brand-logos">
+          <img src="../shared/assets/SSUlogo.webp" alt="Samar State University Logo" class="brand-logo"
+            onerror="this.style.display='none'" />
+          <img src="../shared/assets/USClogo.webp" alt="University Student Council Logo" class="brand-logo"
+            onerror="this.style.display='none'" />
+        </div>
+
+        <div class="brand">
+          <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+          <p>LEADERSHIP | EXCELLENCE | DISCIPLINE | SERVICE</p>
+        </div>
+      </header>
+
+      <nav class="top-nav">
+        <div class="nav-left">
+          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open sidebar"
+            aria-expanded="false">
+            <span class="grid-icon"></span>
+          </button>
+          <div class="breadcrumb">Complaints</div>
+        </div>
+
+        <div class="nav-right">
+          <div class="user-badge">COMPLAINT MANAGEMENT</div>
+          <div class="avatar"></div>
+          <span data-admin-name>USC Officer</span>
+          <div class="bell">🔔</div>
+        </div>
+      </nav>
+
+      <div class="sidebar-overlay" data-sidebar-overlay></div>
+
+      <main class="layout">
+        <aside class="sidebar officer-reference-sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <nav class="officer-module-nav" aria-label="Officer modules">
+                        <a class="nav-btn" href="../overview/overview.html"><span class="icon"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                        <a class="nav-btn" href="../announcements/announcements.html"><span class="icon"><i class="fa-solid fa-note-sticky"></i></span><span>Bulletin Board Center</span></a>
+                        <a class="nav-btn" href="../elections/elections.html"><span class="icon"><i class="fa-regular fa-rectangle-list"></i></span><span>Election Management</span></a>
+                        <a class="nav-btn" href="../events/events.html"><span class="icon"><i class="fa-regular fa-calendar"></i></span><span>Events</span></a>
+                        <a class="nav-btn" href="../organizational-chart/organizational-chart.html"><span class="icon"><i class="fa-solid fa-users"></i></span><span>Organizational Chart</span></a>
+                        <a class="nav-btn" href="../complaints/complaints.html"><span class="icon"><i class="fa-solid fa-message"></i></span><span>Complaints Management</span></a>
+                    </nav>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutOfficer()"><span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span><span>Logout</span></button>
+                </aside>
+
+        <section class="main">
+          <section class="hero">
+            <div class="hero-left">
+              <div class="hero-title">
+                <div>
+                  <h1>Complaint & Feedback Module</h1>
+                  <p>Manage student concerns, update case statuses, and maintain visible communication through tracked
+                    complaint records.</p>
+                </div>
+                <div class="hero-tag">Governance workflow</div>
+              </div>
+
+              <div class="stats">
+                <div class="stat-card">
+                  <div class="stat-label">Submitted</div>
+                  <div class="stat-value" id="submittedCount">0</div>
+                  <div class="stat-sub">New records</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Under Review</div>
+                  <div class="stat-value blue" id="reviewCount">0</div>
+                  <div class="stat-sub">Checking stage</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">In Progress</div>
+                  <div class="stat-value red" id="progressCount">0</div>
+                  <div class="stat-sub">Active handling</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Resolved</div>
+                  <div class="stat-value green" id="resolvedCount">0</div>
+                  <div class="stat-sub">Completed cases</div>
+                </div>
+              </div>
+
+              <div class="hero-actions">
+                <button class="btn primary">Open Complaint Inbox</button>
+                <button class="btn light" data-nav="../overview/overview.html">Back to Dashboard</button>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="panel-head">
+                <h3>Status Flow</h3>
+                <span class="panel-link">Tracking stages</span>
+              </div>
+
+              <div class="timeline">
+                <span class="timeline-step">Submitted</span>
+                <span class="timeline-step active">Under Review</span>
+                <span class="timeline-step">In Progress</span>
+                <span class="timeline-step">Resolved</span>
+                <span class="timeline-step">Closed</span>
+              </div>
+
+              <div class="note-box" style="margin-top:0;">
+                <strong>Transparency</strong>
+                <p>Every status change and officer response should reflect on the student tracklist for accountability.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="grid-2">
+            <article class="card">
+              <div class="card-head">
+                <h3>Complaint Inbox</h3>
+                <span>Received student submissions</span>
+              </div>
+
+              <div class="card-body">
+                <div id="complaintInbox"></div><div class="complaint-inbox-footer"><span id="complaintInboxScope">Showing latest complaints</span><button class="mini-btn light" id="loadOlderComplaints" type="button">Load Older</button></div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <h3>Selected Case Details</h3>
+                <span>Officer response area</span>
+              </div>
+
+              <div class="card-body" id="complaintEmptyState">
+                <div class="note-box" style="margin-top:0;">
+                  <strong>No complaint selected</strong>
+                  <p>Select a complaint from the inbox to view details, update status, or reply.</p>
+                </div>
+              </div>
+
+              <div class="card-body" id="complaintDetailPanel" style="display:none;">
+                <div class="field">
+                  <label>Complaint Reference</label>
+                  <input type="text" id="detailReference" readonly />
+                </div>
+
+                <div class="grid-2">
+                  <div class="field">
+                    <label>Status</label>
+                    <select id="detailStatus">
+                      <option>Submitted</option>
+                      <option>Under Review</option>
+                      <option>In Progress</option>
+                      <option>Resolved</option>
+                      <option>Closed</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label>Category</label>
+                    <input type="text" id="detailCategory" readonly />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label>Student</label>
+                  <input type="text" id="detailStudent" readonly />
+                </div>
+
+                <div class="field">
+                  <label>Subject</label>
+                  <input type="text" id="detailSubject" readonly />
+                </div>
+
+                <div class="field">
+                  <label>Original Complaint</label>
+                  <textarea id="detailComplaintText" readonly></textarea>
+                </div>
+
+                <div class="field">
+                  <label>Complainant Attachment</label>
+                  <div id="detailAttachmentPreview" class="admin-attachment-preview"></div>
+                </div>
+
+                <div class="field">
+                  <label>Officer Reply</label>
+                  <textarea id="detailReply" placeholder="Type your response or update here..."></textarea>
+                </div>
+
+                <div class="row-actions" style="margin-bottom:14px;">
+                  <button class="mini-btn danger" id="deleteComplaintBtn" type="button" hidden>Delete Resolved Case</button>
+                  <button class="mini-btn primary" id="updateStatusBtn" type="button">Update Status</button>
+                  <button class="mini-btn light" id="sendReplyBtn" type="button">Send Reply</button>
+                </div>
+
+                <div class="thread" id="complaintThread"></div>
+              </div>
+            </article>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col">
+      <h3>ABOUT US</h3>
+      <a href="../overview/overview.html">USC Officer Portal</a>
+      <a href="../organizational-chart/organizational-chart.html">University Student Council</a>
+      <a href="../organizational-chart/organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="officer-footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="officer-footer-col officer-footer-links">
+      <a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="officer-footer-bottom">
+    <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" />
+    <img src="../shared/assets/USClogo.webp" alt="USC Logo" />
+    <div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</footer>
+
+    <script src="../shared/js/nav-active.js"></script>
+  <script type="module" src="js/complaints.js"></script>
+  <script type="module" src="../shared/js/admin-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+
+</html>

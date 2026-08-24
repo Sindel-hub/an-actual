@@ -1,0 +1,6 @@
+
+/* Security hardening v3: keep the election status/vote control attached to the viewport. */
+.candidate-vote-zone{position:fixed!important;right:24px!important;bottom:24px!important;z-index:1200!important;background:transparent!important;padding:0!important;margin:0!important;pointer-events:none}
+.candidate-vote-zone button{pointer-events:auto;min-width:180px;box-shadow:0 12px 30px rgba(17,55,83,.22)}
+.candidate-vote-zone button:disabled{opacity:.92;cursor:not-allowed}
+@media(max-width:640px){.candidate-vote-zone{left:16px!important;right:16px!important;bottom:16px!important}.candidate-vote-zone button{width:100%;min-width:0}}

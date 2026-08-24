@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USC Event Module</title>
+    <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+    <link rel="stylesheet" href="css/events.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+
+<body class="officer-app-shell">
+    <div class="page">
+        <div class="page-label">Dashboard</div>
+
+        <div class="app-shell">
+            <header class="top-banner">
+                <div class="brand-logos">
+                    <img src="../shared/assets/SSUlogo.webp" alt="Samar State University Logo" class="brand-logo"
+                        onerror="this.style.display='none'" />
+                    <img src="../shared/assets/USClogo.webp" alt="University Student Council Logo"
+                        class="brand-logo" onerror="this.style.display='none'" />
+                </div>
+
+                <div class="brand">
+                    <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+                    <p>LEADERSHIP | EXCELLENCE | DISCIPLINE | SERVICE</p>
+                </div>
+            </header>
+
+            <nav class="top-nav">
+                <div class="nav-left">
+                    <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open sidebar"
+                        aria-expanded="false">
+                        <span class="grid-icon"></span>
+                    </button>
+                    <div class="breadcrumb">Events</div>
+                </div>
+
+                <div class="nav-right">
+                    <div class="user-badge">USC EVENTS PANEL</div>
+                    <div class="avatar"></div>
+                    <span data-admin-name>USC Officer</span>
+                    <div class="bell">🔔</div>
+                </div>
+            </nav>
+
+            <div class="sidebar-overlay" data-sidebar-overlay></div>
+
+            <main class="layout">
+                <aside class="sidebar officer-reference-sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <nav class="officer-module-nav" aria-label="Officer modules">
+                        <a class="nav-btn" href="../overview/overview.html"><span class="icon"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                        <a class="nav-btn" href="../announcements/announcements.html"><span class="icon"><i class="fa-solid fa-note-sticky"></i></span><span>Bulletin Board Center</span></a>
+                        <a class="nav-btn" href="../elections/elections.html"><span class="icon"><i class="fa-regular fa-rectangle-list"></i></span><span>Election Management</span></a>
+                        <a class="nav-btn" href="../events/events.html"><span class="icon"><i class="fa-regular fa-calendar"></i></span><span>Events</span></a>
+                        <a class="nav-btn" href="../organizational-chart/organizational-chart.html"><span class="icon"><i class="fa-solid fa-users"></i></span><span>Organizational Chart</span></a>
+                        <a class="nav-btn" href="../complaints/complaints.html"><span class="icon"><i class="fa-solid fa-message"></i></span><span>Complaints Management</span></a>
+                    </nav>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutOfficer()"><span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span><span>Logout</span></button>
+                </aside>
+
+                <section class="main">
+                    <section class="hero">
+                        <div class="hero-left">
+                            <div class="hero-title">
+                                <div>
+                                    <h1>Event & Participation Module</h1>
+                                    <p>Create USC events, publish schedules, and keep an organized list of upcoming
+                                        activities for students.</p>
+                                </div>
+                                <div class="hero-tag">Engagement module</div>
+                            </div>
+
+                            <div class="stats">
+                                <div class="stat-card">
+                                    <div class="stat-label">Upcoming Events</div>
+                                    <div class="stat-value" id="upcomingEventCount">0</div>
+                                    <div class="stat-sub">Future schedules</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Published Events</div>
+                                    <div class="stat-value blue" id="publishedEventCount">0</div>
+                                    <div class="stat-sub">Live event posts</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Reminders Enabled</div>
+                                    <div class="stat-value" id="reminderEnabledCount">0</div>
+                                    <div class="stat-sub">Auto-reminder ready</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Confirmed Attendance</div>
+                                    <div class="stat-value green" id="confirmedAttendanceCount">0</div>
+                                    <div class="stat-sub">Across all events</div>
+                                </div>
+                            </div>
+
+                            <div class="hero-actions">
+                                <button class="btn primary" type="button" id="scrollToEventFormBtn">Create
+                                    Event</button>
+                                <button class="btn light" type="button" data-nav="../overview/overview.html">Back to
+                                    Dashboard</button>
+                            </div>
+                        </div>
+
+                        <div class="side-panel">
+                            <div class="panel-head">
+                                <h3>Publishing Notes</h3>
+                                <span class="panel-link">Live schedule</span>
+                            </div>
+
+                            <div class="activity">
+                                <div class="activity-item">
+                                    <div class="dot"></div>
+                                    <div class="activity-text">
+                                        <strong>Student visibility</strong>
+                                        <span>Published events can later be surfaced on the student dashboard or event
+                                            calendar.</span>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="dot"></div>
+                                    <div class="activity-text">
+                                        <strong>Reminder toggle</strong>
+                                        <span>Reminder status is stored per event for later notification
+                                            workflows.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="grid-2">
+                        <article class="card" id="eventFormCard">
+                            <div class="card-head">
+                                <h3>Create Event</h3>
+                                <span>Officer-side event form</span>
+                            </div>
+
+                            <form class="card-body" id="eventForm">
+                                <div class="field">
+                                    <label for="eventTitle">Event Title</label>
+                                    <input id="eventTitle" type="text" placeholder="Enter event title" required />
+                                </div>
+
+                                <div class="grid-2">
+                                    <div class="field">
+                                        <label for="eventDate">Date</label>
+                                        <input id="eventDate" type="date" required />
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="eventVenue">Venue</label>
+                                        <input id="eventVenue" type="text" placeholder="Enter venue" required />
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label for="eventDescription">Description</label>
+                                    <textarea id="eventDescription" placeholder="Write event details and objectives..."
+                                        required></textarea>
+                                </div>
+
+                                <div class="field">
+                                    <label>Event Background Image</label>
+                                    <div class="event-upload-box">
+                                        <input id="eventBackgroundImage" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+                                        <button class="mini-btn primary" type="button" id="eventImagePickerBtn">Choose Image</button>
+                                        <span class="event-upload-file-name" id="eventImageFileName">No image selected</span>
+                                    </div>
+                                    <small class="event-upload-note">
+                                        Optional. JPG, PNG, or WEBP up to 5MB. This image becomes the full event highlight background students see first.
+                                    </small>
+                                    <div class="event-image-preview-wrap" id="eventImagePreviewWrap" hidden>
+                                        <img id="eventImagePreview" class="event-image-preview" alt="Selected event background preview" />
+                                    </div>
+                                </div>
+
+                                <div class="grid-2">
+                                    <div class="field">
+                                        <label for="eventAudience">Participant Access</label>
+                                        <select id="eventAudience" required>
+                                            <option value="All Students">All Students</option>
+                                            <option value="Selected Group">Selected Group</option>
+                                            <option value="Registered Group Only">Registered Group Only</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="eventReminderEnabled">Send Reminder</label>
+                                        <select id="eventReminderEnabled" required>
+                                            <option value="true">Enable Reminder</option>
+                                            <option value="false">Disable Reminder</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row-actions">
+                                    <button class="mini-btn primary" type="submit" id="publishEventBtn">Publish
+                                        Event</button>
+                                    <button class="mini-btn light" type="button" id="clearEventBtn">Clear Form</button>
+                                </div>
+                            </form>
+                        </article>
+
+                        <article class="card">
+                            <div class="card-head">
+                                <h3>Published Events</h3>
+                                <span>Live event feed</span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="recent-list" id="recentEventsList"></div>
+                            </div>
+                        </article>
+                    </section>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col">
+      <h3>ABOUT US</h3>
+      <a href="../overview/overview.html">USC Officer Portal</a>
+      <a href="../organizational-chart/organizational-chart.html">University Student Council</a>
+      <a href="../organizational-chart/organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="officer-footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="officer-footer-col officer-footer-links">
+      <a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="officer-footer-bottom">
+    <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" />
+    <img src="../shared/assets/USClogo.webp" alt="USC Logo" />
+    <div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</footer>
+
+    <script src="../shared/js/nav-active.js"></script>
+    <script type="module" src="js/events.js"></script>
+    <script type="module" src="../shared/js/admin-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+
+</html>

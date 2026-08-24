@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USC Admin Registration Queue</title>
+    <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+    <link rel="stylesheet" href="css/admin-dashboard.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+<body class="officer-app-shell">
+    <div class="page">
+        <div class="page-label">Admin Control</div>
+        <div class="app-shell">
+            <header class="top-banner">
+                <div class="brand-logos">
+                    <img src="../shared/assets/SSUlogo.webp" alt="Samar State University Logo" class="brand-logo" onerror="this.style.display='none'" />
+                    <img src="../shared/assets/USClogo.webp" alt="University Student Council Logo" class="brand-logo" onerror="this.style.display='none'" />
+                </div>
+                <div class="brand">
+                    <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+                    <p>LEADERSHIP | EXCELLENCE | DISCIPLINE | SERVICE</p>
+                </div>
+            </header>
+            <nav class="top-nav">
+                <div class="nav-left">
+                    <div class="breadcrumb">Registration Queue</div>
+                </div>
+                <div class="nav-right">
+                    <div class="user-badge admin-pill">ADMIN ACCESS PANEL</div>
+                    <div class="avatar" data-admin-initials>UA</div>
+                    <div class="admin-headline">
+                        <span data-admin-name>USC Admin</span>
+                        <small data-admin-role>System Administrator</small>
+                    </div>
+                </div>
+            </nav>
+            <main class="layout">
+                <aside class="sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <h2>Admin Modules</h2>
+                    <div class="sidebar-group">
+                        <a class="nav-btn" data-admin-nav href="admin-dashboard.html"><span>🛡️</span><span>Overview</span></a>
+                        <a class="nav-btn" data-admin-nav href="users.html"><span>👥</span><span>User Directory</span></a>
+                        <a class="nav-btn" data-admin-nav href="queue.html"><span>📥</span><span>Registration Queue</span></a>
+                        <a class="nav-btn" data-admin-nav href="audit.html"><span>📜</span><span>Audit & Reports</span></a>
+                    </div>
+                    <div class="note-box admin-note">
+                        <strong>Admin restrictions</strong>
+                        <ul>
+                            <li>Only accounts carrying the trusted <strong>admin</strong> server-side role may use this dashboard.</li>
+                            <li>The admin account cannot access officer modules.</li>
+                            <li>The admin controls account access only.</li>
+                        </ul>
+                    </div>
+                    <div class="admin-summary">
+                        <div class="info-strip">
+                            <strong>Purpose of this module</strong>
+                            <p>Approve accounts, promote officers, suspend access, verify identity, keep notes, and maintain an audit trail.</p>
+                        </div>
+                    </div>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutAdminOnly()"><span>↩</span><span>Log Out</span></button>
+                </aside>
+                <section class="main">
+
+<section class="hero">
+    <article class="card hero-card">
+        <div class="hero-title-row">
+            <div>
+                <h1>Registration Queue</h1>
+                <p>Use this module for fast review of new and pending registrations. The queue is separated from the main editor so the admin can process signups quickly without dealing with the entire directory at once.</p>
+            </div>
+            <div class="hero-tag">Queue review</div>
+        </div>
+        <div class="hero-actions"><span class="quick-badge" id="queueStatusBadge">Live from Firestore</span><button type="button" class="btn light" id="refreshQueueButton">Refresh view</button></div>
+    </article>
+    <article class="card hero-card">
+        <div class="card-head"><div><h3>Queue metrics</h3><span>Fast counts for the newest registrations.</span></div></div>
+        <div class="queue-metrics-grid">
+            <div class="metric-chip"><div><span class="muted">Pending</span><strong id="queuePendingCount">0</strong></div><span class="metric-badge metric-amber">Needs review</span></div>
+            <div class="metric-chip"><div><span class="muted">New this week</span><strong id="queueNewWeekCount">0</strong></div><span class="metric-badge metric-blue">Recent</span></div>
+            <div class="metric-chip"><div><span class="muted">Unverified</span><strong id="queueUnverifiedCount">0</strong></div><span class="metric-badge metric-red">Check identity</span></div>
+            <div class="metric-chip"><div><span class="muted">Officers</span><strong id="queueCandidateCount">0</strong></div><span class="metric-badge metric-green">Officer access</span></div>
+        </div>
+    </article>
+</section>
+<section class="queue-workspace">
+    <article class="card queue-list-card">
+        <div class="card-head queue-list-head"><div><h3>Registration accounts</h3><span>Pending accounts are pinned first. Search or filter without leaving the queue.</span></div><span class="quick-badge" id="queueVisibleCount">0 shown</span></div>
+        <div class="queue-controls">
+            <label class="queue-search-field"><span>Search queue</span><input id="queueSearchInput" type="search" placeholder="Name, email, Student ID or position" /></label>
+            <label><span>Show</span><select id="queueFilterSelect"><option value="all">All recent accounts</option><option value="pending">Pending review</option><option value="new">New this week</option><option value="unverified">Unverified</option><option value="officers">Officers</option></select></label>
+        </div>
+        <div class="queue-list" id="queueList"></div>
+    </article>
+    <article class="card queue-detail-card">
+        <div id="queueEmptyState" class="empty-state"><strong>No user selected</strong><span>Pick a user from the queue to inspect their profile and take quick action.</span></div>
+        <div id="queueDetailPanel" class="hidden user-summary">
+            <div class="restriction-banner hidden" id="queueProtectedBanner">This protected admin account cannot be changed from the queue.</div>
+            <div class="user-summary-top"><div class="profile-avatar" id="queueUserInitials">--</div><div><div class="user-header-row"><span class="user-name" id="queueUserName">—</span><span class="role-badge role-student" id="queueUserRole">student</span><span class="status-badge status-approved" id="queueUserStatus">approved</span></div><p class="subtext" id="queueUserEmail">—</p><p class="subtext" id="queueUserStudentId">Student ID: —</p></div></div>
+            <div class="detail-grid">
+                <div class="detail-chip"><strong>Registered at</strong><span id="queueRegisteredAt">—</span></div>
+                <div class="detail-chip"><strong>Last login</strong><span id="queueLastLogin">—</span></div>
+                <div class="detail-chip"><strong>Voter verification</strong><span id="queueVerifiedState">—</span></div>
+                <div class="detail-chip"><strong>Vote state</strong><span id="queueVoteState">—</span></div>
+                <div class="detail-chip"><strong>Complaint summary</strong><span id="queueComplaintState">—</span></div>
+                <div class="detail-chip"><strong>Current route</strong><span id="queueCurrentRoute">—</span></div>
+            </div>
+            <div class="field"><label for="queueOfficePosition">Officer position</label><select id="queueOfficePosition"><option value="">Select officer position</option><option>President</option><option>Vice President</option><option>Secretary</option><option>Treasurer</option><option>Auditor</option><option>Public Relations Officer (PRO)</option><option>Business Manager</option><option>Sgt. at Arms</option><option>Department Representative</option></select></div>
+            <div class="field"><label for="queueReason">Queue action reason</label><textarea id="queueReason" placeholder="This reason is recorded in the audit trail."></textarea></div>
+            <div class="action-group"><button type="button" class="btn success" id="queueApproveButton">Approve</button><button type="button" class="btn primary" id="queuePromoteButton">Promote to officer</button><button type="button" class="btn danger-light" id="queueSuspendButton">Suspend</button><button type="button" class="btn light" id="queueVerifyButton">Toggle verify</button></div>
+            <div class="subtext" id="queueFeedbackText">Ready for queue actions.</div>
+        </div>
+    </article>
+</section>
+
+                </section>
+            </main>
+        </div>
+    </div>
+    
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col">
+      <h3>ABOUT US</h3>
+      <a href="../overview/overview.html">USC Officer Portal</a>
+      <a href="../../dashboard/organizational-chart.html">University Student Council</a>
+      <a href="../../dashboard/organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="officer-footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="officer-footer-col officer-footer-links">
+      <a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="officer-footer-bottom">
+    <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" />
+    <img src="../shared/assets/USClogo.webp" alt="USC Logo" />
+    <div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</footer>
+
+    <script type="module" src="js/admin-queue.js"></script>
+    <script type="module" src="../shared/js/admin-only-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+</html>

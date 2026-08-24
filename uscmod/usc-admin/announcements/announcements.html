@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USC Announcement Module</title>
+    <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+    <link rel="stylesheet" href="css/announcements.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+
+<body class="officer-app-shell">
+    <div class="page">
+        <div class="page-label">Dashboard</div>
+
+        <div class="app-shell">
+            <header class="top-banner">
+                <div class="brand-logos">
+                    <img src="../shared/assets/SSUlogo.webp" alt="Samar State University Logo" class="brand-logo"
+                        onerror="this.style.display='none'" />
+                    <img src="../shared/assets/USClogo.webp" alt="University Student Council Logo"
+                        class="brand-logo" onerror="this.style.display='none'" />
+                </div>
+
+                <div class="brand">
+                    <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+                    <p>LEADERSHIP | EXCELLENCE | DISCIPLINE | SERVICE</p>
+                </div>
+            </header>
+
+            <nav class="top-nav">
+                <div class="nav-left">
+                    <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open sidebar"
+                        aria-expanded="false">
+                        <span class="grid-icon"></span>
+                    </button>
+                    <div class="breadcrumb">Bulletin Board Center</div>
+                </div>
+
+                <div class="nav-right">
+                    
+                    <div class="avatar"></div>
+                    <span data-admin-name>USC Officer</span>
+                    <div class="bell">
+                        <i class="fa-regular fa-bell"></i>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-overlay" data-sidebar-overlay></div>
+
+            <main class="layout">
+                <aside class="sidebar officer-reference-sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <nav class="officer-module-nav" aria-label="Officer modules">
+                        <a class="nav-btn" href="../overview/overview.html"><span class="icon"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                        <a class="nav-btn" href="../announcements/announcements.html"><span class="icon"><i class="fa-solid fa-note-sticky"></i></span><span>Bulletin Board Center</span></a>
+                        <a class="nav-btn" href="../elections/elections.html"><span class="icon"><i class="fa-regular fa-rectangle-list"></i></span><span>Election Management</span></a>
+                        <a class="nav-btn" href="../events/events.html"><span class="icon"><i class="fa-regular fa-calendar"></i></span><span>Events</span></a>
+                        <a class="nav-btn" href="../organizational-chart/organizational-chart.html"><span class="icon"><i class="fa-solid fa-users"></i></span><span>Organizational Chart</span></a>
+                        <a class="nav-btn" href="../complaints/complaints.html"><span class="icon"><i class="fa-solid fa-message"></i></span><span>Complaints Management</span></a>
+                    </nav>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutOfficer()"><span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span><span>Logout</span></button>
+                </aside>
+
+                <section class="main">
+                    <section class="hero">
+                        <div class="hero-left">
+                            <div class="hero-title">
+                                <div>
+                                    <h1>Announcement & Notification Module</h1>
+                                    <p>
+                                        Create USC announcements, attach an image from your
+                                        <strong>usc-public-media</strong> bucket, preview the result, and publish it live
+                                        to the student side.
+                                    </p>
+                                </div>
+                                <div class="hero-tag">Communication hub</div>
+                            </div>
+
+                            <div class="stats">
+                                <div class="stat-card">
+                                    <div class="stat-label">Published</div>
+                                    <div class="stat-value" id="publishedCount">0</div>
+                                    <div class="stat-sub">Live announcements</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">With Images</div>
+                                    <div class="stat-value blue" id="imageCount">0</div>
+                                    <div class="stat-sub">Uploaded posters</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Categories</div>
+                                    <div class="stat-value" id="categoryCount">0</div>
+                                    <div class="stat-sub">Active announcement types</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-label">Latest Publish</div>
+                                    <div class="stat-value green stat-value-sm" id="latestPublish">N/A</div>
+                                    <div class="stat-sub">Most recent live post</div>
+                                </div>
+                            </div>
+
+                            <div class="hero-actions">
+                                <button class="btn primary" id="scrollToFormBtn" type="button">Create
+                                    Announcement</button>
+                                <button class="btn light" type="button" data-nav="../overview/overview.html">Back to
+                                    Dashboard</button>
+                            </div>
+                        </div>
+
+                        <div class="side-panel">
+                            <div class="panel-head">
+                                <h3>Publishing Notes</h3>
+                                <span class="panel-link">Live feed</span>
+                            </div>
+
+                            <div class="activity">
+                                <div class="activity-item">
+                                    <div class="dot"></div>
+                                    <div class="activity-text">
+                                        <strong>Image upload source</strong>
+                                        <span>
+                                            Announcement images are uploaded to the public
+                                            <strong>usc-public-media</strong> bucket.
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="dot"></div>
+                                    <div class="activity-text">
+                                        <strong>Student dashboard sync</strong>
+                                        <span>
+                                            Published announcements automatically appear on the student announcement
+                                            slider.
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="grid-2 announcement-workspace">
+                        <article class="card" id="announcementFormCard">
+                            <div class="card-head">
+                                <h3>Create Announcement</h3>
+                                <span>Officer-side posting form</span>
+                            </div>
+
+                            <form class="card-body" id="announcementForm">
+                                <div class="field">
+                                    <label for="announcementTitle">Announcement Title</label>
+                                    <input id="announcementTitle" type="text" placeholder="Enter announcement title"
+                                        required />
+                                </div>
+
+                                <div class="grid-2 compact-grid">
+                                    <div class="field">
+                                        <label for="announcementCategory">Category</label>
+                                        <select id="announcementCategory" required>
+                                            <option value="Official Notice">Official Notice</option>
+                                            <option value="Event Update">Event Update</option>
+                                            <option value="Election Notice">Election Notice</option>
+                                            <option value="Student Reminder">Student Reminder</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="announcementAudience">Audience</label>
+                                        <select id="announcementAudience" required>
+                                            <option value="All Students">All Students</option>
+                                            <option value="Selected Group">Selected Group</option>
+                                            <option value="Registered Participants">Registered Participants</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label for="announcementContent">Announcement Content</label>
+                                    <textarea id="announcementContent"
+                                        placeholder="Write the official announcement here..." required></textarea>
+                                </div>
+
+                                <div class="field">
+                                    <label>Announcement Image</label>
+                                    <div class="upload-box">
+                                        <input id="announcementImage" type="file" accept="image/*" hidden />
+                                        <button class="mini-btn primary" type="button" id="imagePickerBtn">Add
+                                            Image</button>
+                                        <span class="upload-file-name" id="imageFileName">No image selected</span>
+                                    </div>
+                                    <small class="upload-note">
+                                        Optional. Uploads to the <strong>usc-public-media</strong> Supabase bucket.
+                                    </small>
+                                </div>
+
+                                <div class="preview-thumb-wrap">
+                                    <img id="draftImagePreview" class="preview-thumb hidden"
+                                        alt="Announcement image preview" />
+                                </div>
+
+                                <div class="row-actions form-actions">
+                                    <button class="mini-btn primary" type="submit" id="publishAnnouncementBtn">Post
+                                        Announcement</button>
+                                    <button class="mini-btn light" type="button" id="clearAnnouncementBtn">Clear
+                                        Form</button>
+                                </div>
+                            </form>
+                        </article>
+
+                        <article class="card">
+                            <div class="card-head">
+                                <h3>Live Preview</h3>
+                                <span>How students will see this post</span>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="preview-card" id="announcementPreviewCard">
+                                    <div class="preview-card-image empty" id="announcementPreviewImageWrap">
+                                        <img id="announcementPreviewImage" alt="Announcement preview image"
+                                            class="hidden" />
+                                        <div class="preview-image-placeholder" id="announcementPreviewPlaceholder">
+                                            No image selected
+                                        </div>
+                                    </div>
+
+                                    <div class="preview-meta-row">
+                                        <span class="badge live" id="previewCategoryBadge">Official Notice</span>
+                                        <span class="preview-date" id="previewDateText">Not yet posted</span>
+                                    </div>
+
+                                    <h3 id="previewTitle">Announcement title preview</h3>
+                                    <p class="preview-audience" id="previewAudience">Audience: All Students</p>
+                                    <p class="preview-content" id="previewContent">
+                                        Your announcement content will appear here as you type.
+                                    </p>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+
+                    <article class="card full-width-card">
+                        <div class="card-head">
+                            <h3>Published Announcements</h3>
+                            <span>Live student-facing feed</span>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="recent-list" id="recentAnnouncementsList"></div>
+                        </div>
+                    </article>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div class="announcement-modal hidden" id="announcementModal">
+        <div class="announcement-modal-backdrop" id="announcementModalBackdrop"></div>
+        <div class="announcement-modal-dialog">
+            <button class="modal-close" id="announcementModalClose" type="button">x</button>
+            <img id="modalAnnouncementImage" class="modal-image hidden" alt="Announcement image" />
+            <div class="modal-meta">
+                <span class="badge live" id="modalAnnouncementCategory">Official Notice</span>
+                <span id="modalAnnouncementDate">N/A</span>
+            </div>
+            <h3 id="modalAnnouncementTitle"></h3>
+            <p class="modal-audience" id="modalAnnouncementAudience"></p>
+            <p id="modalAnnouncementContent"></p>
+        </div>
+    </div>
+
+    
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col">
+      <h3>ABOUT US</h3>
+      <a href="../overview/overview.html">USC Officer Portal</a>
+      <a href="../organizational-chart/organizational-chart.html">University Student Council</a>
+      <a href="../organizational-chart/organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="officer-footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="officer-footer-col officer-footer-links">
+      <a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="officer-footer-bottom">
+    <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" />
+    <img src="../shared/assets/USClogo.webp" alt="USC Logo" />
+    <div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</footer>
+
+    <script src="../shared/js/nav-active.js"></script>
+    <script type="module" src="js/announcements.js"></script>
+    <script type="module" src="../shared/js/admin-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+
+</html>

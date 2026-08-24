@@ -1,0 +1,533 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function role() { return signedIn() && request.auth.token.role is string ? request.auth.token.role : ""; }
+    function ownProfile() { return get(/databases/$(database)/documents/users/$(uid())).data; }
+    function activeSchoolStanding(data) {
+      return !("studentStanding" in data) || data.studentStanding == "active";
+    }
+    function activeProfileRole(expected) {
+      return signedIn()
+        && ownProfile().role == expected
+        && ownProfile().isActive != false
+        && ownProfile().accountStatus == "approved"
+        && (expected == "admin" || activeSchoolStanding(ownProfile()));
+    }
+    // Administrator writes require the trusted custom claim plus an approved/active
+    // administrator profile. The school-provisioned account model does not use
+    // Firebase email_verified as a second authorization switch.
+    function isAdmin() { return role() == "admin" && activeProfileRole("admin"); }
+    // Officer/student authority is stored in the administrator-controlled Firestore profile.
+    // Admin authority still requires the trusted Firebase custom claim.
+    function isOfficer() { return activeProfileRole("officer"); }
+    function isOfficerOrAdmin() { return isOfficer() || isAdmin(); }
+    function isCanvasser() { return isAdmin() || (isOfficer() && ownProfile().canvasser == true); }
+    function schoolStudent() {
+      return activeProfileRole("student")
+        && ownProfile().accountStatus == "approved"
+        && ownProfile().schoolProvisioned == true;
+    }
+    function verifiedStudent() {
+      return schoolStudent() && ownProfile().isVerifiedStudent == true;
+    }
+    function ownUser(userId) { return signedIn() && uid() == userId; }
+    function ownStudentId(studentId) {
+      return signedIn() && get(/databases/$(database)/documents/users/$(uid())).data.studentId == studentId;
+    }
+    function safeOwnProfileUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "fullName", "profilePhoto", "profileUpdatedAt", "updatedAt", "updatedAtMs", "mustChangePassword"
+        ])
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() >= 2
+        && request.resource.data.fullName.size() <= 120
+        && (!("profilePhoto" in request.resource.data)
+            || (request.resource.data.profilePhoto is string
+                && request.resource.data.profilePhoto.size() <= 400000));
+    }
+    function electionDoc(electionId) {
+      return get(/databases/$(database)/documents/elections/$(electionId)).data;
+    }
+    function electionExists(electionId) {
+      return exists(/databases/$(database)/documents/elections/$(electionId));
+    }
+    function votingOpenByServer(electionId) {
+      return electionExists(electionId)
+        && electionDoc(electionId).finalized != true
+        && electionDoc(electionId).archived != true
+        && request.time >= electionDoc(electionId).votingStart
+        && request.time < electionDoc(electionId).votingEnd;
+    }
+    function candidatePublishedByServer(electionId) {
+      return electionExists(electionId)
+        && request.time >= electionDoc(electionId).candidatePublicationStart;
+    }
+
+    function complaintRatePath() {
+      return /databases/$(database)/documents/complaint_rate_limits/$(uid());
+    }
+    function complaintCooldownSatisfied() {
+      return !exists(complaintRatePath())
+        || get(complaintRatePath()).data.lastSubmittedAt <= request.time - duration.value(20, "s");
+    }
+    function complaintRateCommittedNow() {
+      return getAfter(complaintRatePath()).data.studentUid == uid()
+        && getAfter(complaintRatePath()).data.lastSubmittedAt == request.time;
+    }
+    function validComplaintAttachment(data) {
+      return data.attachmentType in [
+          "", "image/jpeg", "image/png", "image/webp",
+          "application/pdf", "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ]
+        && data.attachmentSize is int
+        && data.attachmentSize >= 0
+        && data.attachmentSize <= 5242880
+        && (!data.attachmentType.matches("^image/") || data.attachmentSize <= 3145728);
+    }
+    function resultsReadableByServer(electionId) {
+      return electionExists(electionId)
+        && electionDoc(electionId).finalized == true
+        && electionDoc(electionId).resultsPublished == true
+        && request.time >= electionDoc(electionId).resultPublicationStart;
+    }
+
+    // Public information used by the landing page.
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow create, update, delete: if isOfficerOrAdmin();
+    }
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isOfficerOrAdmin();
+    }
+
+    // User profiles: users can change display-only profile fields. Roles, eligibility,
+    // Student IDs, account status, and officer privileges are server-controlled.
+    match /users/{userId} {
+      allow read: if ownUser(userId) || isAdmin();
+      // Browser provisioning is create-only and may create ordinary school-provisioned
+      // student or officer profiles. It can never create a System Administrator.
+      allow create: if isAdmin()
+        && request.resource.data.uid == userId
+        && request.resource.data.role in ["student", "officer"]
+        && request.resource.data.accountStatus == "approved"
+        && request.resource.data.schoolProvisioned == true
+        && request.resource.data.yearLevel is string
+        && request.resource.data.yearLevel.size() >= 2
+        && request.resource.data.yearLevel.size() <= 40
+        && request.resource.data.studentStanding in ["active", "leave", "inactive", "graduated", "transferred", "withdrawn", "eliminated"]
+        && request.resource.data.isActive == (request.resource.data.studentStanding == "active")
+        && request.resource.data.isVerifiedStudent is bool
+        && (request.resource.data.studentStanding == "active" || request.resource.data.isVerifiedStudent == false)
+        && request.resource.data.studentId is string
+        && request.resource.data.studentId.matches("^[0-9]{6}$")
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() >= 2
+        && request.resource.data.fullName.size() <= 120
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 200
+        && (request.resource.data.role == "student"
+          || (request.resource.data.officePosition is string
+            && request.resource.data.officePosition.size() >= 2
+            && request.resource.data.officePosition.size() <= 120));
+      allow update: if (ownUser(userId) && safeOwnProfileUpdate())
+        || (isAdmin()
+          && resource.data.role != "admin"
+          && request.resource.data.role in ["student", "officer"]
+          && request.resource.data.studentId == resource.data.studentId
+          && (!("yearLevel" in request.resource.data)
+            || (request.resource.data.yearLevel is string
+              && request.resource.data.yearLevel.size() <= 40))
+          && (!("studentStanding" in request.resource.data)
+            || request.resource.data.studentStanding in ["active", "leave", "inactive", "graduated", "transferred", "withdrawn", "eliminated"])
+          && (!("studentStanding" in request.resource.data)
+            || request.resource.data.isActive == (request.resource.data.studentStanding == "active"))
+          && (!("studentStanding" in request.resource.data)
+            || request.resource.data.studentStanding == "active"
+            || request.resource.data.isVerifiedStudent == false));
+      allow delete: if false;
+    }
+
+    // Complaints are private to the submitting student and authorized officers/admins.
+    // Submission is paired atomically with a per-student rate-limit record. This avoids
+    // duplicate-click floods and distributes concurrent writes across user-specific docs.
+    match /complaints/{complaintId} {
+      // Exact GETs may probe a not-yet-created random ID so transaction retries can
+      // safely determine whether an earlier attempt already committed. Existing
+      // complaints remain readable only to their owner or authorized staff.
+      allow get: if signedIn() && (
+        !exists(/databases/$(database)/documents/complaints/$(complaintId))
+        || resource.data.studentUid == uid()
+        || isOfficerOrAdmin()
+      );
+      allow list: if signedIn() && (resource.data.studentUid == uid() || isOfficerOrAdmin());
+      allow create: if schoolStudent()
+        && request.resource.data.studentUid == uid()
+        && request.resource.data.studentId == get(/databases/$(database)/documents/users/$(uid())).data.studentId
+        && request.resource.data.studentEmail == get(/databases/$(database)/documents/users/$(uid())).data.email
+        && request.resource.data.status == "Submitted"
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.subject is string
+        && request.resource.data.subject.size() >= 3
+        && request.resource.data.subject.size() <= 120
+        && request.resource.data.details is string
+        && request.resource.data.details.size() >= 5
+        && request.resource.data.details.size() <= 1000
+        && validComplaintAttachment(request.resource.data)
+        && complaintCooldownSatisfied()
+        && complaintRateCommittedNow()
+        && request.resource.data.keys().hasOnly([
+          "complaintRef", "submissionId", "studentUid", "studentId", "studentName", "studentEmail", "studentDepartment",
+          "subject", "category", "incidentDate", "details", "status", "createdAt", "updatedAt",
+          "attachmentName", "attachmentPath", "attachmentStorageBucket", "attachmentStoragePath",
+          "attachmentType", "attachmentSize", "thread"
+        ]);
+      // Browser-only capstone status updates are restricted to authorized officers/admins.
+      // Only status + server timestamp may change from the browser. Reply text remains
+      // fail-closed unless a trusted backend is configured.
+      allow update: if isOfficerOrAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "updatedAt", "thread"])
+        && request.resource.data.status in ["Submitted", "Under Review", "In Progress", "Resolved", "Closed"]
+        && request.resource.data.updatedAt == request.time
+        && (!(request.resource.data.diff(resource.data).affectedKeys().hasAny(["thread"]))
+          || (request.resource.data.thread is list
+            && resource.data.thread is list
+            && request.resource.data.thread.size() == resource.data.thread.size() + 1
+            && request.resource.data.thread.size() <= 200));
+      // A complaint becomes deletable only after it has reached a terminal workflow state.
+      allow delete: if isOfficerOrAdmin() && resource.data.status in ["Resolved", "Closed"];
+
+      // Browser-only capstone attachment storage. Files are split into bounded chunks
+      // under the complaint, so they inherit the complaint's student/officer privacy
+      // instead of depending on a Cloud Function or public storage URL.
+      match /attachmentChunks/{chunkId} {
+        allow read: if signedIn() && (
+          get(/databases/$(database)/documents/complaints/$(complaintId)).data.studentUid == uid()
+          || isOfficerOrAdmin()
+        );
+        allow create: if signedIn()
+          && getAfter(/databases/$(database)/documents/complaints/$(complaintId)).data.studentUid == uid()
+          && request.resource.data.studentUid == uid()
+          && request.resource.data.index is int
+          && request.resource.data.index >= 0
+          && request.resource.data.index <= 30
+          && request.resource.data.payload is string
+          && request.resource.data.payload.size() > 0
+          && request.resource.data.payload.size() <= 850000
+          && request.resource.data.keys().hasOnly(["studentUid", "index", "payload"]);
+        allow update: if false;
+        allow delete: if isOfficerOrAdmin()
+          && exists(/databases/$(database)/documents/complaints/$(complaintId))
+          && get(/databases/$(database)/documents/complaints/$(complaintId)).data.status in ["Resolved", "Closed"];
+      }
+    }
+
+    // Minimal immutable complaint case audit. No complaint body or voter-sensitive data is stored here.
+    match /complaint_case_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isOfficerOrAdmin()
+        && request.resource.data.actorUid == uid()
+        && request.resource.data.action in ["COMPLAINT_STATUS_UPDATED", "COMPLAINT_DELETED"]
+        && request.resource.data.complaintId is string
+        && request.resource.data.complaintId.size() > 0
+        && request.resource.data.complaintRef is string
+        && request.resource.data.statusBefore is string
+        && request.resource.data.statusAfter is string
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasAll([
+          "actorUid", "actorEmail", "action", "complaintId", "complaintRef",
+          "statusBefore", "statusAfter", "source", "createdAt"
+        ])
+        && request.resource.data.keys().hasOnly([
+          "actorUid", "actorEmail", "action", "complaintId", "complaintRef",
+          "statusBefore", "statusAfter", "source", "createdAt"
+        ]);
+      allow update, delete: if false;
+    }
+
+    // Per-user complaint cooldown. A student can only advance their own timestamp to
+    // the current server request time. The complaint create rule requires this write
+    // in the same transaction, so the cooldown cannot be skipped by the browser.
+    match /complaint_rate_limits/{userId} {
+      allow get: if signedIn() && userId == uid();
+      allow list: if false;
+      allow create: if schoolStudent()
+        && userId == uid()
+        && request.resource.data.keys().hasOnly(["studentUid", "lastSubmittedAt"])
+        && request.resource.data.studentUid == uid()
+        && request.resource.data.lastSubmittedAt == request.time;
+      allow update: if schoolStudent()
+        && userId == uid()
+        && resource.data.studentUid == uid()
+        && request.resource.data.studentUid == uid()
+        && request.resource.data.keys().hasOnly(["studentUid", "lastSubmittedAt"])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["lastSubmittedAt"])
+        && request.resource.data.lastSubmittedAt == request.time;
+      allow delete: if false;
+    }
+
+    // Browser-managed capstone election workflow. Firestore Rules remain the final
+    // authorization/time gate so the UI does not need a Cloud Function for normal use.
+    match /election_config/{docId} {
+      allow read: if signedIn();
+      allow create, update: if isOfficerOrAdmin()
+        && docId == "current"
+        && request.resource.data.electionId is string
+        && request.resource.data.electionId.matches("^[a-z0-9][a-z0-9-]{2,79}$");
+      allow delete: if false;
+    }
+    match /elections/{electionId} {
+      allow read: if signedIn();
+      allow create: if isOfficerOrAdmin()
+        && request.resource.data.title is string
+        && request.resource.data.registrationStart is timestamp
+        && request.resource.data.registrationEnd is timestamp
+        && request.resource.data.applicationReviewStart is timestamp
+        && request.resource.data.applicationReviewEnd is timestamp
+        && request.resource.data.candidatePublicationStart is timestamp
+        && request.resource.data.candidatePublicationEnd is timestamp
+        && request.resource.data.votingStart is timestamp
+        && request.resource.data.votingEnd is timestamp
+        && request.resource.data.resultPublicationStart is timestamp
+        && request.resource.data.resultPublicationEnd is timestamp
+        && request.resource.data.registrationStart < request.resource.data.registrationEnd
+        && request.resource.data.registrationEnd <= request.resource.data.applicationReviewStart
+        && request.resource.data.applicationReviewStart < request.resource.data.applicationReviewEnd
+        && request.resource.data.applicationReviewEnd <= request.resource.data.candidatePublicationStart
+        && request.resource.data.candidatePublicationStart < request.resource.data.candidatePublicationEnd
+        && request.resource.data.candidatePublicationEnd <= request.resource.data.votingStart
+        && request.resource.data.votingStart < request.resource.data.votingEnd
+        && request.resource.data.votingEnd <= request.resource.data.resultPublicationStart
+        && request.resource.data.resultPublicationStart < request.resource.data.resultPublicationEnd;
+      allow update: if isOfficerOrAdmin()
+        && resource.data.archived != true
+        && (request.resource.data.finalized == resource.data.finalized || isCanvasser())
+        && (request.resource.data.resultsPublished == resource.data.resultsPublished || isCanvasser())
+        && (request.resource.data.archived == resource.data.archived || isAdmin())
+        && (request.resource.data.archived != true || request.resource.data.resultsPublished == true)
+        && (request.resource.data.resultsPublished != true || request.resource.data.finalized == true)
+        && (request.resource.data.finalized != true || request.time >= resource.data.votingEnd)
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            "registrationStart", "registrationEnd", "applicationReviewStart", "applicationReviewEnd",
+            "candidatePublicationStart", "candidatePublicationEnd", "votingStart", "votingEnd",
+            "resultPublicationStart", "resultPublicationEnd"
+          ])
+          || request.time < resource.data.registrationStart
+          || isAdmin());
+      allow delete: if false;
+
+      match /rosterImports/{importId} {
+        allow read, create, update: if isAdmin();
+        allow delete: if false;
+      }
+
+      match /voterRoster/{studentId} {
+        allow read: if isAdmin() || (verifiedStudent() && ownStudentId(studentId));
+        allow create, update: if isAdmin()
+          && request.resource.data.studentId == studentId
+          && request.resource.data.eligible is bool
+          && (!("studentStanding" in request.resource.data)
+            || request.resource.data.studentStanding == "active"
+            || request.resource.data.eligible == false);
+        allow delete: if isAdmin();
+      }
+
+      // Participation status contains no candidate selections. The browser transaction
+      // must create this record together with the anonymous ballot during the voting window.
+      match /voterStatus/{userId} {
+        allow read: if ownUser(userId) || isAdmin();
+        allow create: if verifiedStudent()
+          && userId == uid()
+          && votingOpenByServer(electionId)
+          && request.resource.data.hasVoted == true
+          && request.resource.data.studentId == ownProfile().studentId
+          && request.resource.data.receiptReference is string
+          && request.resource.data.receiptReference.size() >= 8;
+        allow update, delete: if false;
+      }
+
+      match /applications/{applicantUid} {
+        allow read: if ownUser(applicantUid) || isOfficerOrAdmin();
+        allow create: if verifiedStudent()
+          && applicantUid == uid()
+          && request.time >= electionDoc(electionId).registrationStart
+          && request.time < electionDoc(electionId).registrationEnd
+          && request.resource.data.applicantUid == uid()
+          && request.resource.data.studentId == ownProfile().studentId
+          && request.resource.data.status == "Under Review"
+          && request.resource.data.position in ["President", "Vice President", "Secretary", "Treasurer", "Auditor", "Public Relations Officer", "Business Manager", "Sgt. at Arms", "Department Representative"];
+        allow update: if isOfficerOrAdmin()
+          && request.time >= electionDoc(electionId).applicationReviewStart
+          && request.time < electionDoc(electionId).applicationReviewEnd
+          && resource.data.status == "Under Review"
+          && request.resource.data.status in ["Approved", "Rejected"];
+        allow delete: if false;
+      }
+
+      match /candidates/{candidateId} {
+        allow read: if isOfficerOrAdmin() || (signedIn() && candidatePublishedByServer(electionId));
+        allow create: if isOfficerOrAdmin()
+          && request.time >= electionDoc(electionId).applicationReviewStart
+          && request.time < electionDoc(electionId).applicationReviewEnd
+          && request.resource.data.candidateId == candidateId
+          && request.resource.data.approved == true
+          && request.resource.data.position in ["President", "Vice President", "Secretary", "Treasurer", "Auditor", "Public Relations Officer", "Business Manager", "Sgt. at Arms", "Department Representative"];
+        allow update, delete: if false;
+      }
+
+      // Capstone browser ballot. The ballot document itself contains only candidate IDs
+      // and schema metadata. Identity remains in the separate voterStatus record.
+      match /ballots/{ballotId} {
+        allow read: if isCanvasser()
+          && electionDoc(electionId).finalized == true
+          && request.time >= electionDoc(electionId).votingEnd;
+        allow create: if verifiedStudent()
+          && votingOpenByServer(electionId)
+          && !exists(/databases/$(database)/documents/elections/$(electionId)/voterStatus/$(uid()))
+          && getAfter(/databases/$(database)/documents/elections/$(electionId)/voterStatus/$(uid())).data.hasVoted == true
+          && request.resource.data.schemaVersion == 2
+          && request.resource.data.recordedAt == request.time
+          && request.resource.data.keys().hasOnly(["selections", "schemaVersion", "recordedAt"])
+          && request.resource.data.selections is map
+          && request.resource.data.selections.keys().hasOnly(["President", "Vice President", "Secretary", "Treasurer", "Auditor", "Public Relations Officer", "Business Manager", "Sgt. at Arms", "Department Representative"])
+          && request.resource.data.selections.keys().hasAll(["President", "Vice President", "Secretary", "Treasurer", "Auditor", "Public Relations Officer", "Business Manager", "Sgt. at Arms", "Department Representative"]);
+        allow update, delete: if false;
+      }
+
+      match /turnout/{docId} {
+        allow read: if signedIn();
+        allow create: if isOfficerOrAdmin();
+        allow update: if isOfficerOrAdmin()
+          || (verifiedStudent()
+            && docId == "public"
+            && votingOpenByServer(electionId)
+            && request.resource.data.ballotsCast == resource.data.ballotsCast + 1
+            && request.resource.data.eligibleVoters == resource.data.eligibleVoters);
+        allow delete: if false;
+      }
+
+      match /privateTallies/{candidateId} {
+        allow read: if isCanvasser()
+          && electionDoc(electionId).finalized == true
+          && request.time >= electionDoc(electionId).votingEnd;
+        allow write: if false;
+      }
+
+      match /results/{resultId} {
+        allow read: if (isCanvasser()
+            && electionDoc(electionId).finalized == true
+            && request.time >= electionDoc(electionId).votingEnd)
+          || resultsReadableByServer(electionId);
+        allow create, update: if isCanvasser()
+          && resultId == "official"
+          && electionDoc(electionId).finalized == true
+          && request.time >= electionDoc(electionId).resultPublicationStart;
+        allow delete: if false;
+      }
+    }
+
+    // Browser-only file storage for the Spark/no-backend capstone build.
+    // Public event/announcement/candidate photos may be read by any visitor;
+    // private candidacy documents stay restricted to their owner and authorized staff.
+    match /browser_files/{fileId} {
+      allow read: if resource.data.visibility == "public"
+        || (signedIn() && resource.data.kind == "candidate-photo")
+        || (signedIn() && (resource.data.ownerUid == uid() || isOfficerOrAdmin()));
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == uid()
+        && request.resource.data.kind in ["event-media", "announcement-media", "candidate-photo", "candidate-document"]
+        && request.resource.data.visibility in ["public", "private"]
+        && request.resource.data.size is int
+        && request.resource.data.size > 0
+        && request.resource.data.size <= 6291456
+        && request.resource.data.chunkCount is int
+        && request.resource.data.chunkCount > 0
+        && request.resource.data.chunkCount <= 24
+        && ((request.resource.data.kind in ["event-media", "announcement-media"] && isOfficerOrAdmin())
+          || (request.resource.data.kind in ["candidate-photo", "candidate-document"] && verifiedStudent()));
+      allow update: if false;
+      allow delete: if signedIn() && (resource.data.ownerUid == uid() || isOfficerOrAdmin());
+
+      match /chunks/{chunkId} {
+        allow read: if get(/databases/$(database)/documents/browser_files/$(fileId)).data.visibility == "public"
+          || (signedIn() && get(/databases/$(database)/documents/browser_files/$(fileId)).data.kind == "candidate-photo")
+          || (signedIn() && (get(/databases/$(database)/documents/browser_files/$(fileId)).data.ownerUid == uid() || isOfficerOrAdmin()));
+        allow create: if signedIn()
+          && getAfter(/databases/$(database)/documents/browser_files/$(fileId)).data.ownerUid == uid()
+          && request.resource.data.index is int
+          && request.resource.data.index >= 0
+          && request.resource.data.index < 24
+          && request.resource.data.payload is string
+          && request.resource.data.payload.size() > 0
+          && request.resource.data.payload.size() <= 700000;
+        allow update: if false;
+        allow delete: if signedIn()
+          && (get(/databases/$(database)/documents/browser_files/$(fileId)).data.ownerUid == uid() || isOfficerOrAdmin());
+      }
+    }
+
+    // Free Spark school-login aliases. Only exact document GETs are public;
+    // collection listing and all browser writes remain denied. Alias documents
+    // contain only the internal Firebase Auth login address, not passwords.
+    match /login_aliases/{aliasId} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.authEmail is string
+        && request.resource.data.authEmail.size() <= 200
+        && request.resource.data.kind in ["studentId", "institutionalEmail"];
+      allow delete: if isAdmin();
+    }
+
+    // Identity and uniqueness records used by the school account provisioner.
+    // Only the trusted System Administrator can mutate them.
+    match /student_masterlist/{studentId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin() && request.resource.data.studentId == studentId;
+      allow delete: if isAdmin();
+    }
+    match /student_id_claims/{studentId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && !exists(/databases/$(database)/documents/student_id_claims/$(studentId))
+        && request.resource.data.studentId == studentId
+        && request.resource.data.uid is string;
+      allow update: if isAdmin()
+        && resource.data.uid == request.resource.data.uid
+        && request.resource.data.studentId == studentId;
+      allow delete: if isAdmin();
+    }
+    match /school_accounts/{studentId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.studentId == studentId
+        && request.resource.data.uid is string;
+      allow delete: if isAdmin();
+    }
+
+    // Immutable administrator audit stream. Admins may append events, but no browser
+    // client may alter or delete an existing event.
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.actorUid == uid()
+        && request.resource.data.action is string;
+      allow update, delete: if false;
+    }
+
+    // Legacy election collections are fail-closed. Migrate old records before production use.
+    match /votes/{docId} { allow read, write: if false; }
+    match /candidate_applications/{docId} { allow read, write: if false; }
+    match /election_settings/{docId} { allow read, write: if false; }
+    match /role_logs/{docId} { allow read: if isAdmin(); allow write: if false; }
+
+    // Everything not explicitly listed is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

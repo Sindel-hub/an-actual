@@ -1,0 +1,14 @@
+node_modules/
+functions/node_modules/
+.firebase/
+.env
+.env.*
+!.env.example
+*.log
+service-account*.json
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.DS_Store
+
+# Free local admin bridge runtime files

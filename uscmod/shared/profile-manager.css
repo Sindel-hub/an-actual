@@ -1,0 +1,79 @@
+/* Shared basic profile editor used by student, officer and admin dashboards. */
+.usc-profile-avatar-host{position:relative!important;overflow:hidden!important;isolation:isolate}
+.usc-profile-avatar-image{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:inherit!important;z-index:2!important;background:#fff!important}
+.usc-profile-trigger{font:inherit;color:inherit;background:transparent;border:0;padding:0;margin:0;display:flex;align-items:center;gap:9px;cursor:pointer;border-radius:999px;min-width:0;transition:background .18s ease,box-shadow .18s ease}
+.usc-profile-trigger:hover{background:rgba(27,183,236,.08)}
+.usc-profile-trigger:focus-visible{outline:3px solid rgba(27,183,236,.28);outline-offset:3px}
+.usc-profile-trigger-chevron{font-size:10px;opacity:.55;margin-right:8px;transition:transform .18s ease}
+.usc-profile-trigger[aria-expanded="true"] .usc-profile-trigger-chevron{transform:rotate(180deg)}
+.usc-student-profile-trigger{padding:3px 2px 3px 4px}
+.usc-top-profile-trigger{padding:4px 2px 4px 5px}
+.usc-top-profile-trigger .admin-headline{display:flex;flex-direction:column;align-items:flex-start;line-height:1.1}
+.usc-top-profile-trigger .admin-headline span{font-weight:800}
+.usc-profile-overlay{position:fixed;inset:0;z-index:2990;background:rgba(8,24,40,.32);backdrop-filter:blur(1.5px);opacity:0;transition:opacity .2s ease}
+.usc-profile-overlay.is-open{opacity:1}
+.usc-profile-drawer{position:fixed;z-index:3000;top:0;right:0;width:min(420px,94vw);height:100dvh;background:#fff;box-shadow:-18px 0 48px rgba(15,36,58,.18);transform:translateX(104%);transition:transform .22s ease;display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;color:#243d56;text-align:left}
+.usc-profile-drawer.is-open{transform:translateX(0)}
+.usc-profile-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 22px 16px;border-bottom:1px solid #e7eef4;background:linear-gradient(135deg,#f8fcff,#edf8fc)}
+.usc-profile-drawer-head span{display:block;color:#199ed7;font-size:10px;font-weight:900;letter-spacing:.14em;margin-bottom:3px}
+.usc-profile-drawer-head h2{margin:0;color:#174e91;font-size:22px;line-height:1.15}
+.usc-profile-drawer-head button{width:38px;height:38px;border:0;border-radius:12px;background:#fff;color:#31516f;box-shadow:0 4px 15px rgba(30,65,96,.09);cursor:pointer}
+.usc-profile-photo-section{display:grid;grid-template-columns:92px minmax(0,1fr);gap:16px;padding:20px 22px;border-bottom:1px solid #edf2f6}
+.usc-profile-photo-preview{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(145deg,#1bb7ec,#2256ad);color:#fff;font-size:28px;font-weight:900;box-shadow:0 8px 24px rgba(33,86,173,.2);border:4px solid #fff;outline:1px solid #d8e7f0}
+.usc-profile-photo-preview img{width:100%;height:100%;object-fit:cover}
+.usc-profile-photo-actions{min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.usc-profile-photo-actions>strong{font-size:17px;color:#1d3f64;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.usc-profile-photo-actions>small{margin-top:2px;color:#6f8396;font-weight:700}
+.usc-profile-photo-buttons{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}
+.usc-profile-photo-buttons button{border:1px solid #d9e5ed;border-radius:9px;background:#f7fbfd;color:#2c567b;padding:7px 9px;font:inherit;font-size:11px;font-weight:800;cursor:pointer}
+.usc-profile-photo-buttons button:hover{background:#edf8fc;border-color:#b9dcea}
+.usc-profile-photo-buttons .danger-text{color:#b24141;background:#fff8f8;border-color:#f1d3d3}
+.usc-profile-photo-help{margin:7px 0 0;color:#8a9aa8;font-size:10px}
+.usc-profile-form{padding:18px 22px 8px;display:grid;gap:12px}
+.usc-profile-form label{display:grid;gap:6px;color:#526b83;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.025em}
+.usc-profile-form input{width:100%;height:42px;box-sizing:border-box;border:1px solid #dce6ed!important;border-radius:10px!important;background:#fff!important;padding:0 12px!important;color:#243e58!important;font:inherit!important;font-size:13px!important;text-transform:none!important;letter-spacing:0!important;box-shadow:none!important}
+.usc-profile-form input:focus{outline:3px solid rgba(27,183,236,.14)!important;border-color:#63c2e5!important}
+.usc-profile-form input[readonly]{background:#f5f8fa!important;color:#738698!important;cursor:not-allowed}
+.usc-profile-account-status{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;border:1px solid #e1eaf0;border-radius:10px;background:#fafcfd;font-size:12px}
+.usc-profile-account-status span{color:#647a8e;font-weight:800}
+.usc-profile-account-status strong{padding:4px 9px;border-radius:999px;background:#e9f8ef;color:#20824a;font-size:10px;text-transform:capitalize}
+.usc-profile-account-status strong[data-status="pending"]{background:#fff6df;color:#9a6b00}
+.usc-profile-account-status strong[data-status="suspended"]{background:#fff0f0;color:#b63d3d}
+.usc-profile-message{min-height:18px;margin:0;color:#6c7f91;font-size:11px;line-height:1.45}
+.usc-profile-message[data-kind="success"]{color:#18824a}
+.usc-profile-message[data-kind="error"]{color:#b63d3d}
+.usc-profile-save{height:43px;border:0;border-radius:10px;background:linear-gradient(135deg,#1bb7ec,#2256ad);color:#fff;font:inherit;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(33,86,173,.16)}
+.usc-profile-save:disabled{opacity:.65;cursor:wait}
+.usc-profile-logout{margin:auto 22px 22px;height:42px;min-height:42px;border:1px solid #f0d3d3;border-radius:10px;background:#fff8f8;color:#b54242;font:inherit;font-weight:900;cursor:pointer}
+html.usc-profile-scroll-locked,body.usc-profile-scroll-locked,body.usc-profile-drawer-open{overflow:hidden!important;overscroll-behavior:none!important}
+.usc-profile-overlay{overscroll-behavior:none}
+.usc-profile-drawer{scrollbar-gutter:stable}
+@media(max-width:620px){
+  .usc-profile-trigger-chevron{display:none}
+  .usc-student-profile-trigger .header-user-name{display:none!important}
+  .usc-top-profile-trigger>[data-admin-name],.usc-top-profile-trigger>.admin-headline{display:none!important}
+  .usc-profile-drawer{width:min(390px,100vw)}
+  .usc-profile-photo-section{grid-template-columns:76px minmax(0,1fr);padding:17px}
+  .usc-profile-photo-preview{width:76px;height:76px;font-size:23px}
+  .usc-profile-drawer-head,.usc-profile-form{padding-left:17px;padding-right:17px}
+  .usc-profile-logout{margin-left:17px;margin-right:17px}
+}
+
+/* School-account password management */
+.usc-profile-password-card {
+  margin: 4px 22px 18px;
+  padding: 16px;
+  border: 1px solid rgba(24,66,137,.13);
+  border-radius: 16px;
+  background: #f7f9fd;
+}
+.usc-profile-password-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+.usc-profile-password-head strong { color:#183f84; font-size:14px; }
+.usc-profile-password-head small { padding:3px 8px; border-radius:999px; background:#e8eefb; color:#5270a7; font-weight:700; font-size:10px; }
+.usc-profile-password-card > p { margin:0 0 12px; color:#6b7280; font-size:11px; line-height:1.45; }
+.usc-profile-password-card label { display:block; margin:9px 0; color:#475569; font-size:11px; font-weight:700; }
+.usc-profile-password-card input { width:100%; margin-top:5px; padding:10px 11px; border:1px solid #d7dfed; border-radius:10px; background:#fff; color:#111827; outline:none; }
+.usc-profile-password-card input:focus { border-color:#2d64bd; box-shadow:0 0 0 3px rgba(45,100,189,.10); }
+.usc-profile-password-message { min-height:16px; margin:8px 0!important; }
+.usc-profile-password-message[data-kind="success"] { color:#167548; }
+.usc-profile-password-message[data-kind="error"] { color:#b42318; }

@@ -1,0 +1,100 @@
+.recent-list {
+  display: grid;
+  gap: 14px;
+}
+
+.empty-state {
+  padding: 20px;
+  border: 1px dashed rgba(24, 74, 164, 0.25);
+  border-radius: 18px;
+  text-align: center;
+  color: #5f7092;
+  background: #f8fbff;
+}
+
+.event-meta-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-top: 12px;
+  color: #5f7092;
+  font-size: 13px;
+}
+
+#eventDescription {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.event-item-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Event background image uploader */
+.event-upload-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.event-upload-file-name {
+  font-size: 12px;
+  color: #607086;
+  overflow-wrap: anywhere;
+}
+
+.event-upload-note {
+  display: block;
+  margin-top: 8px;
+  color: #6e7f97;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.event-image-preview-wrap {
+  margin-top: 12px;
+  width: 100%;
+  border: 1px solid #d6e0f0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f5f9ff;
+}
+
+.event-image-preview-wrap[hidden] {
+  display: none !important;
+}
+
+.event-image-preview {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.event-published-thumb {
+  width: 100%;
+  height: 145px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid #dce5f2;
+  background: #eef4fb;
+  margin-bottom: 12px;
+}
+
+.event-published-thumb-placeholder {
+  min-height: 88px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  border: 1px dashed #c8d5e7;
+  border-radius: 14px;
+  color: #708097;
+  background: #f7faff;
+  font-size: 12px;
+  font-weight: 700;
+}

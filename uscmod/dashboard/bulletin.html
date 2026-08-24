@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>USC Bulletin Board</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<link href="css/dashboard.css" rel="stylesheet"/><link href="css/student-pages.css" rel="stylesheet"/>
+<link rel="stylesheet" href="../shared/profile-manager.css" />
+  <script src="../shared/app-config.js"></script>
+  <script type="module" src="../shared/auth-guard.js"></script>
+</head>
+<body class="student-app-shell">
+<header class="dashboard-header">
+<div class="dashboard-brand"><img alt="SSU Seal" src="assets/SSUlogo.webp"/><img alt="USC Logo" src="assets/USClogo.webp"/><div class="dashboard-brand-copy"><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP  |  EXCELLENCE  |  DISCIPLINE  |  SERVICE</span></div></div>
+
+</header>
+<div class="dashboard-layout page-layout">
+<aside class="student-sidebar page-sidebar"><div class="sidebar-student-mark"><i class="fa-solid fa-user-graduate"></i></div><nav class="student-nav"><a class="student-nav-link" href="dashboard.html"><i class="fa-solid fa-briefcase"></i><span>Dashboard</span></a><a class="student-nav-link active" href="bulletin.html"><i class="fa-solid fa-note-sticky"></i><span>Bulletin Board</span></a><a class="student-nav-link" href="election.html"><i class="fa-regular fa-building"></i><span>Election</span></a><a class="student-nav-link" href="events.html"><i class="fa-regular fa-calendar"></i><span>Events</span></a><a class="student-nav-link" href="organizational-chart.html"><i class="fa-solid fa-users"></i><span>Organizational Chart</span></a><a class="student-nav-link" href="../complaint/complaint.html"><i class="fa-solid fa-hand-holding-heart"></i><span>Student Complain</span></a><a class="student-nav-link" href="../dashboard/handbook.html"><i class="fa-solid fa-book-open"></i><span>Student Handbook</span></a><a class="student-nav-link" href="tracklist.html"><i class="fa-solid fa-list"></i><span>Student Tracklist</span></a></nav><button class="sidebar-logout" id="studentLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button></aside>
+
+<div class="student-module-column"><div class="student-module-toolbar"><h1 id="studentModuleTitle">Bulletin Board</h1><div class="dashboard-user-area"><div class="notification-wrap"><button aria-label="Notifications" class="header-icon-btn" id="notificationButton" type="button"><i class="fa-solid fa-bell"></i><span class="notification-dot hidden" id="notificationDot"></span></button><div class="notification-panel hidden" id="notificationPanel"><div class="notification-panel-head"><strong>Notifications</strong><button id="markNotificationsRead" type="button">Mark all as read</button></div><div class="notification-list" id="notificationList"></div></div></div><div class="header-avatar" id="dashboardUserInitials">ST</div><span class="header-user-name" id="dashboardUserName">Student</span></div></div><main class="student-page-main bulletin-page-main">
+
+<section aria-label="USC announcements" class="bulletin-carousel">
+<button aria-label="Previous announcements" class="bulletin-carousel-arrow bulletin-carousel-prev" id="bulletinPrev" type="button"><i class="fa-solid fa-chevron-left"></i></button>
+<div class="bulletin-carousel-viewport" id="bulletinViewport">
+<div class="bulletin-page-feed" id="bulletinFeed"><div class="page-loading">Loading announcements...</div></div>
+</div>
+<button aria-label="Next announcements" class="bulletin-carousel-arrow bulletin-carousel-next" id="bulletinNext" type="button"><i class="fa-solid fa-chevron-right"></i></button>
+<div aria-label="Announcement pages" class="bulletin-carousel-dots" id="bulletinDots"></div>
+</section>
+</main></div></div><footer class="site-footer shared-student-footer" id="contactSection">
+<div class="footer-main">
+<div class="footer-col">
+<h3>ABOUT US</h3>
+<a href="organizational-chart.html">About us</a>
+<a href="organizational-chart.html">University Student Council Seal</a>
+<a href="organizational-chart.html">Organizational Chart</a>
+</div>
+<div class="footer-col">
+<h3>CONTACT US</h3>
+<p><strong>Samar State University</strong></p>
+<p>Arteche Boulevard</p>
+<p>Catbalogan, Samar 6700</p>
+</div>
+<div class="footer-col footer-contact-links">
+<a href="https://ssu.edu.ph" rel="noopener" target="_blank"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+<a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+</div>
+</div>
+<div class="footer-bottom">
+<img alt="SSU Logo" src="assets/SSUlogo.webp"/>
+<img alt="USC Logo" src="assets/USClogo.webp"/>
+<div class="footer-brand-copy">
+<strong>SSU UNIVERSITY STUDENT COUNCIL</strong>
+<span>LEADERSHIP  |  EXCELLENCE  |  DISCIPLINE  |  SERVICE</span>
+</div>
+</div>
+</footer>
+<div class="announcement-modal hidden" id="bulletinModal"><div class="announcement-modal-backdrop" data-close=""></div><div class="announcement-modal-dialog"><button class="modal-close" data-close="" type="button">×</button><img alt="Announcement" class="modal-image hidden" id="bulletinModalImage"/><div class="modal-meta"><span class="badge live" id="bulletinModalCategory">Official Notice</span><span id="bulletinModalDate">—</span></div><h3 id="bulletinModalTitle"></h3><p class="modal-audience" id="bulletinModalAudience"></p><p id="bulletinModalContent"></p></div></div>
+<script src="js/notifications.js" type="module"></script><script src="js/bulletin.js" type="module"></script>
+<script type="module" src="../shared/profile-manager.js"></script>
+</body></html>

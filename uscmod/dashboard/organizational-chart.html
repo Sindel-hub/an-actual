@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>USC Organizational Chart</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/student-pages.css" />
+<link rel="stylesheet" href="../shared/profile-manager.css" />
+  <script src="../shared/app-config.js"></script>
+  <script type="module" src="../shared/auth-guard.js"></script>
+</head>
+<body class="student-app-shell">
+  <header class="dashboard-header">
+    <div class="dashboard-brand">
+      <img src="assets/SSUlogo.webp" alt="SSU Seal" />
+      <img src="assets/USClogo.webp" alt="USC Logo" />
+      <div class="dashboard-brand-copy">
+        <strong>SSU UNIVERSITY STUDENT COUNCIL</strong>
+        <span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-layout page-layout">
+    <aside class="student-sidebar page-sidebar">
+      <div class="sidebar-student-mark"><i class="fa-solid fa-user-graduate"></i></div>
+      <nav class="student-nav" aria-label="Student module navigation">
+        <a class="student-nav-link" href="dashboard.html"><i class="fa-solid fa-briefcase"></i><span>Dashboard</span></a>
+        <a class="student-nav-link" href="bulletin.html"><i class="fa-solid fa-note-sticky"></i><span>Bulletin Board</span></a>
+        <a class="student-nav-link" href="election.html"><i class="fa-regular fa-building"></i><span>Election</span></a>
+        <a class="student-nav-link" href="events.html"><i class="fa-regular fa-calendar"></i><span>Events</span></a>
+        <a class="student-nav-link active" href="organizational-chart.html"><i class="fa-solid fa-users"></i><span>Organizational Chart</span></a>
+        <a class="student-nav-link" href="../complaint/complaint.html"><i class="fa-solid fa-hand-holding-heart"></i><span>Student Complain</span></a>
+        <a class="student-nav-link" href="../dashboard/handbook.html"><i class="fa-solid fa-book-open"></i><span>Student Handbook</span></a>
+        <a class="student-nav-link" href="tracklist.html"><i class="fa-solid fa-list"></i><span>Student Tracklist</span></a>
+      </nav>
+      <button class="sidebar-logout" id="studentLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+      <div aria-hidden="true" class="sidebar-session-info">
+        <span id="sidebarGreeting">HELLO,<br />STUDENT</span>
+        <small id="sidebarStudentId">Student</small>
+      </div>
+    </aside>
+
+    <div class="student-module-column">
+      <div class="student-module-toolbar">
+        <h1 id="studentModuleTitle">Organizational Chart</h1>
+        <div class="dashboard-user-area">
+          <div class="notification-wrap">
+            <button class="header-icon-btn" id="notificationButton" type="button" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="notification-dot hidden" id="notificationDot"></span></button>
+            <div class="notification-panel hidden" id="notificationPanel"><div class="notification-panel-head"><strong>Notifications</strong><button id="markNotificationsRead" type="button">Mark all as read</button></div><div class="notification-list" id="notificationList"></div></div>
+          </div>
+          <div class="header-avatar" id="dashboardUserInitials">ST</div>
+          <span class="header-user-name" id="dashboardUserName">Student</span>
+        </div>
+      </div>
+
+      <main class="student-page-main orgchart-styled-main">
+        <section class="orgchart-showcase">
+          <div class="orgchart-blur-bg"></div>
+          <div class="orgchart-overlay"></div>
+          <div class="orgchart-schematic">
+            <div class="org-tier tier-1">
+              <article class="org-box focus">
+                <div class="org-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="org-label">President</div>
+              </article>
+            </div>
+            <div class="connector vertical top"></div>
+            <div class="connector horizontal first"></div>
+            <div class="org-tier tier-2">
+              <article class="org-box"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">Vice President</div></article>
+              <article class="org-box"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">Secretary</div></article>
+              <article class="org-box"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">Treasurer</div></article>
+              <article class="org-box"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">Auditor</div></article>
+              <article class="org-box"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">P.R.O.</div></article>
+            </div>
+            <div class="org-tier tier-3">
+              <article class="org-box small"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">1st Year Rep</div></article>
+              <article class="org-box small"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">2nd Year Rep</div></article>
+              <article class="org-box small"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">3rd Year Rep</div></article>
+              <article class="org-box small"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">4th Year Rep</div></article>
+              <article class="org-box small"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><div class="org-label">Committee Heads</div></article>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="site-footer shared-student-footer" id="contactSection">
+    <div class="footer-main">
+      <div class="footer-col">
+        <h3>ABOUT US</h3>
+        <a href="organizational-chart.html">About us</a>
+        <a href="organizational-chart.html">University Student Council Seal</a>
+        <a href="organizational-chart.html">Organizational Chart</a>
+      </div>
+      <div class="footer-col"><h3>CONTACT US</h3><p><strong>Samar State University</strong></p><p>Arteche Boulevard</p><p>Catbalogan, Samar 6700</p></div>
+      <div class="footer-col footer-contact-links"><a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a><a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a></div>
+    </div>
+    <div class="footer-bottom"><img src="assets/SSUlogo.webp" alt="SSU Logo" /><img src="assets/USClogo.webp" alt="USC Logo" /><div class="footer-brand-copy"><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div></div>
+  </footer>
+
+  <script type="module" src="js/notifications.js"></script>
+  <script type="module" src="js/student-shell.js"></script>
+<script type="module" src="../shared/profile-manager.js"></script>
+</body>
+</html>

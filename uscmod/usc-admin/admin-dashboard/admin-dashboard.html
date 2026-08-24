@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USC Admin Access Overview</title>
+    <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+    <link rel="stylesheet" href="css/admin-dashboard.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+<body class="officer-app-shell">
+    <div class="page">
+        <div class="page-label">Admin Control</div>
+        <div class="app-shell">
+            <header class="top-banner">
+                <div class="brand-logos">
+                    <img src="../shared/assets/SSUlogo.webp" alt="Samar State University Logo" class="brand-logo" onerror="this.style.display='none'" />
+                    <img src="../shared/assets/USClogo.webp" alt="University Student Council Logo" class="brand-logo" onerror="this.style.display='none'" />
+                </div>
+                <div class="brand">
+                    <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+                    <p>LEADERSHIP | EXCELLENCE | DISCIPLINE | SERVICE</p>
+                </div>
+            </header>
+            <nav class="top-nav">
+                <div class="nav-left">
+                    <div class="breadcrumb">Admin Dashboard</div>
+                </div>
+                <div class="nav-right">
+                    <div class="user-badge admin-pill">ADMIN ACCESS PANEL</div>
+                    <div class="avatar" data-admin-initials>UA</div>
+                    <div class="admin-headline">
+                        <span data-admin-name>USC Admin</span>
+                        <small data-admin-role>System Administrator</small>
+                    </div>
+                </div>
+            </nav>
+            <main class="layout">
+                <aside class="sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <h2>Admin Modules</h2>
+                    <div class="sidebar-group">
+                        <a class="nav-btn" data-admin-nav href="admin-dashboard.html"><span>🛡️</span><span>Overview</span></a>
+                        <a class="nav-btn" data-admin-nav href="users.html"><span>👥</span><span>User Directory</span></a>
+                        <a class="nav-btn" data-admin-nav href="queue.html"><span>📥</span><span>Registration Queue</span></a>
+                        <a class="nav-btn" data-admin-nav href="audit.html"><span>📜</span><span>Audit & Reports</span></a>
+                    </div>
+                    <div class="note-box admin-note">
+                        <strong>Admin restrictions</strong>
+                        <ul>
+                            <li>Only accounts carrying the trusted <strong>admin</strong> server-side role may use this dashboard.</li>
+                            <li>The admin account cannot access officer modules.</li>
+                            <li>The admin controls account access only.</li>
+                        </ul>
+                    </div>
+                    <div class="admin-summary">
+                        <div class="info-strip">
+                            <strong>Purpose of this module</strong>
+                            <p>Approve accounts, promote officers, suspend access, verify identity, and manage registration flow without leaving the admin access module.</p>
+                        </div>
+                    </div>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutAdminOnly()"><span>↩</span><span>Log Out</span></button>
+                </aside>
+                <section class="main">
+
+<section class="hero">
+    <article class="card hero-card">
+        <div class="hero-title-row">
+            <div>
+                <p class="admin-welcome-line">Welcome back, <strong><span data-usc-welcome-role>System Administrator</span> <span data-usc-welcome-name data-admin-name>USC Admin</span>!</strong></p>
+                <h1>Admin Access Overview</h1>
+                <p>Split the admin workload into focused modules instead of forcing every tool into one long page. Use this overview to monitor account health, watch the latest registrations, and jump to the exact admin task you need.</p>
+            </div>
+            <div class="hero-tag">Admin only</div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Registered Accounts</div><div class="stat-value" id="statTotal">0</div><div class="stat-sub">All user profiles</div></div>
+            <div class="stat-card"><div class="stat-label">Approved</div><div class="stat-value green" id="statApproved">0</div><div class="stat-sub">Ready to use the system</div></div>
+            <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value amber" id="statPending">0</div><div class="stat-sub">Need admin review</div></div>
+            <div class="stat-card"><div class="stat-label">Suspended</div><div class="stat-value red" id="statSuspended">0</div><div class="stat-sub">Access restricted</div></div>
+            <div class="stat-card"><div class="stat-label">Officers</div><div class="stat-value blue" id="statOfficers">0</div><div class="stat-sub">Officer access granted</div></div>
+            <div class="stat-card"><div class="stat-label">Verified</div><div class="stat-value blue" id="statVerified">0</div><div class="stat-sub">Marked verified</div></div>
+            <div class="stat-card"><div class="stat-label">New This Week</div><div class="stat-value" id="statNewWeek">0</div><div class="stat-sub">Recent signups</div></div>
+            <div class="stat-card"><div class="stat-label">Never Logged In</div><div class="stat-value" id="statNeverLogin">0</div><div class="stat-sub">Need follow-up</div></div>
+        </div>
+    </article>
+    <article class="card hero-card">
+        <div class="card-head card-head-stack">
+            <div>
+                <h3>Quick module access</h3>
+                <span>Go straight to the admin task instead of scrolling through one oversized page.</span>
+            </div>
+        </div>
+        <div class="quick-links">
+            <a class="quick-link" href="users.html"><strong>User Directory</strong><p>Search accounts, edit roles, assign office positions, and use bulk actions.</p></a>
+            <a class="quick-link" href="queue.html"><strong>Registration Queue</strong><p>Review pending accounts and take one-click approve, promote, or suspend actions.</p></a>
+            <a class="quick-link" href="../student-registration/student-registration.html"><strong>Create Student</strong><p>Issue a school-provided student login and printable credential slip.</p></a>
+            <a class="quick-link" href="../student-registration/officer-registration.html"><strong>Create Officer</strong><p>Create an officer login, assign a USC position, and print the officer login slip.</p></a>
+        </div>
+    </article>
+</section>
+<section class="card-grid two">
+    <article class="card">
+        <div class="card-head"><div><h3>Users needing attention</h3><span>Administrative warnings based on the current data model.</span></div><span class="quick-badge">Live checks</span></div>
+        <div class="warning-list" id="warningsList"><div class="empty-state"><strong>Loading warnings</strong><span>Checking current user data…</span></div></div>
+    </article>
+    <article class="card sticky-card">
+        <div class="card-head"><div><h3>System policy</h3><span>Visible rules for the admin account.</span></div></div>
+        <div class="system-list">
+            <div class="system-card"><h4>Sole admin identity</h4><p>Administrator access is granted by a trusted server-side custom claim, not by a hard-coded email address.</p></div>
+            <div class="system-card"><h4>Officer separation</h4><p>The admin account is locked out of officer pages. Officers still use the officer dashboard and operational modules.</p></div>
+            <div class="system-card"><h4>Recommended backend rule</h4><p>Firestore rules should reject any write that attempts to assign <code>role = &quot;admin&quot;</code> to a different email.</p></div>
+        </div>
+    </article>
+</section>
+<section class="card-grid two">
+    <article class="card">
+        <div class="card-head"><div><h3>Recent registrations</h3><span>Newest accounts and pending approval candidates.</span></div><a class="btn soft" href="queue.html">Open queue</a></div>
+        <div class="queue-list" id="recentQueueList"><div class="empty-state"><strong>Loading queue</strong><span>Connecting to Firestore…</span></div></div>
+    </article>
+    <article class="card">
+        <div class="card-head"><div><h3>Latest access activity</h3><span>Recent promotions, suspensions, verification updates, and profile edits.</span></div><a class="btn soft" href="audit.html">Open audit log</a></div>
+        <div class="log-list" id="recentLogList"><div class="empty-state"><strong>Loading audit trail</strong><span>Waiting for access history…</span></div></div>
+    </article>
+</section>
+
+                </section>
+            </main>
+        </div>
+    </div>
+    
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col">
+      <h3>ABOUT US</h3>
+      <a href="../overview/overview.html">USC Officer Portal</a>
+      <a href="../../dashboard/organizational-chart.html">University Student Council</a>
+      <a href="../../dashboard/organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="officer-footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="officer-footer-col officer-footer-links">
+      <a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="officer-footer-bottom">
+    <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" />
+    <img src="../shared/assets/USClogo.webp" alt="USC Logo" />
+    <div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</footer>
+
+    <script type="module" src="js/admin-dashboard.js"></script>
+    <script type="module" src="../shared/js/admin-only-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+</html>

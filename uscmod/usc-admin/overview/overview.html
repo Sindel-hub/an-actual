@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USC Officer Dashboard</title>
+    <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+    <link rel="stylesheet" href="css/overview.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+<body class="officer-app-shell officer-reference-dashboard">
+<div class="page"><div class="app-shell">
+<header class="top-banner">
+    <div class="brand-logos"><img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" class="brand-logo"/><img src="../shared/assets/USClogo.webp" alt="USC Logo" class="brand-logo"/></div>
+    <div class="brand"><h1>SSU UNIVERSITY STUDENT COUNCIL</h1><p>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</p></div>
+</header>
+<nav class="top-nav reference-dashboard-toolbar">
+    <div class="nav-left reference-search-wrap">
+        <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open sidebar" aria-expanded="false"><span class="grid-icon"></span></button>
+        <div class="officer-search-box" id="officerSearchBox">
+            <div class="officer-search">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input id="officerQuickSearch" type="search" aria-label="Search officer modules" placeholder="Search modules" autocomplete="off" />
+                <button class="officer-search-clear" id="officerSearchClear" type="button" aria-label="Clear search" hidden><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="officer-search-results" id="officerSearchResults" role="listbox" aria-label="Officer module search results" hidden></div>
+        </div>
+    </div>
+    <div class="nav-right">
+        <button class="bell officer-bell" type="button" aria-label="Notifications"><i class="fa-regular fa-bell"></i></button>
+        <button class="officer-profile-trigger" id="officerProfileTrigger" type="button" aria-label="Open officer profile" aria-expanded="false" aria-controls="officerProfileDrawer">
+            <span class="avatar" aria-hidden="true"></span>
+            <span class="officer-profile-trigger-copy"><strong data-admin-name>USC Officer</strong><small data-admin-role>Officer</small></span>
+            <i class="fa-solid fa-chevron-down officer-profile-chevron" aria-hidden="true"></i>
+        </button>
+    </div>
+</nav>
+<div class="sidebar-overlay" data-sidebar-overlay></div>
+<main class="layout">
+    <aside class="sidebar officer-reference-sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <nav class="officer-module-nav" aria-label="Officer modules">
+                        <a class="nav-btn" href="../overview/overview.html"><span class="icon"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                        <a class="nav-btn" href="../announcements/announcements.html"><span class="icon"><i class="fa-solid fa-note-sticky"></i></span><span>Bulletin Board Center</span></a>
+                        <a class="nav-btn" href="../elections/elections.html"><span class="icon"><i class="fa-regular fa-rectangle-list"></i></span><span>Election Management</span></a>
+                        <a class="nav-btn" href="../events/events.html"><span class="icon"><i class="fa-regular fa-calendar"></i></span><span>Events</span></a>
+                        <a class="nav-btn" href="../organizational-chart/organizational-chart.html"><span class="icon"><i class="fa-solid fa-users"></i></span><span>Organizational Chart</span></a>
+                        <a class="nav-btn" href="../complaints/complaints.html"><span class="icon"><i class="fa-solid fa-message"></i></span><span>Complaints Management</span></a>
+                    </nav>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutOfficer()"><span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span><span>Logout</span></button>
+                </aside>
+    <section class="main reference-overview-main">
+        <section class="officer-welcome-card">
+            <div class="officer-welcome-copy"><small id="officerTodayLabel">Today</small><h1>Welcome back,<br><span class="officer-welcome-identity"><span data-usc-welcome-role>USC Officer</span> <span data-usc-welcome-name data-admin-name>Officer</span>!</span></h1><p>Always stay updated!</p></div>
+            <img src="../shared/assets/officer-duo.png" alt="Officer dashboard illustration" class="officer-welcome-art" />
+        </section>
+
+        <section class="reference-dashboard-grid">
+            <div class="reference-left-column">
+                <div class="reference-pair">
+                    <section class="reference-block">
+                        <div class="reference-heading"><h2>Officers’ Tracklist</h2><a href="../complaints/complaints.html">view... &gt;</a></div>
+                        <article class="officer-track-card"><span>Total Complaints</span><strong data-overview-pending-complaints>0</strong><p>Pending / Active Records</p><div class="tiny-pages"><i></i><i class="active"></i><i></i></div></article>
+                    </section>
+                    <section class="reference-block">
+                        <div class="reference-heading"><h2>Election</h2><a href="../elections/elections.html">view for more details &gt;</a></div>
+                        <article class="officer-election-card">
+                            <div><span>Turnout Rate</span><strong data-overview-election-turnout>0%</strong><small>Voted</small><b data-overview-election-votes-cast>0</b></div>
+                            <div class="clean-chart" aria-hidden="true"><div class="chart-bars"><i></i><i></i><i></i></div><div class="chart-line"></div><div class="chart-arrow"><span></span><i class="fa-solid fa-arrow-trend-up"></i></div></div>
+                        </article>
+                    </section>
+                </div>
+
+                <section class="reference-block event-reference-block">
+                    <div class="reference-heading"><h2>Events</h2><a href="../events/events.html">view for more details &gt;</a></div>
+                    <article class="officer-event-card">
+                        <div class="mini-calendar"><div class="calendar-head"><button type="button" aria-label="Previous month">‹</button><strong id="officerCalendarMonth">Current Month</strong><button type="button" aria-label="Next month">›</button></div><div class="calendar-week"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div><div class="calendar-days" id="officerCalendarDays"></div></div>
+                        <div class="officer-event-list" id="officerOverviewEvents"><div class="reference-empty">No upcoming events yet.</div></div>
+                    </article>
+                </section>
+
+                <section class="election-control-strip">
+                    <div><span class="control-kicker">Automatic Election Phase</span><h3 id="overviewElectionStatus">Checking election schedule...</h3><p id="overviewElectionPhaseNote">Voting and other election functions are controlled automatically by the configured schedule.</p></div>
+                    <div class="election-control-actions"><a class="control-btn open" href="../elections/elections.html"><i class="fa-regular fa-calendar-check"></i> Manage Schedule</a></div>
+                </section>
+
+                <section class="officer-management-suite">
+                    <div class="management-suite-heading">
+                        <div><span>OFFICER TOOLS</span><h2>Officer Management Center</h2><p>The front dashboard keeps the student-style layout, while these controls remain officer-only.</p></div>
+                    </div>
+                    <div class="management-feature-grid">
+                        <article class="management-feature-card announcements-feature">
+                            <div class="management-feature-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                            <div class="management-feature-copy"><span>Bulletin Board Center</span><strong data-overview-announcement-count>0</strong><p>Published announcements</p></div>
+                            <div class="management-feature-actions"><a href="../announcements/announcements.html">Create / Manage</a></div>
+                        </article>
+                        <article class="management-feature-card complaints-feature">
+                            <div class="management-feature-icon"><i class="fa-solid fa-message"></i></div>
+                            <div class="management-feature-copy"><span>Complaints Management</span><strong data-overview-pending-complaints>0</strong><p>Pending / active cases</p></div>
+                            <div class="management-feature-actions"><a href="../complaints/complaints.html">Open Case Queue</a></div>
+                        </article>
+                        <article class="management-feature-card events-feature">
+                            <div class="management-feature-icon"><i class="fa-regular fa-calendar-days"></i></div>
+                            <div class="management-feature-copy"><span>Events Management</span><strong data-overview-upcoming-events>0</strong><p>Upcoming events</p></div>
+                            <div class="management-feature-actions"><a href="../events/events.html">Create / Manage</a></div>
+                        </article>
+                        <article class="management-feature-card officers-feature">
+                            <div class="management-feature-icon"><i class="fa-solid fa-user-tie"></i></div>
+                            <div class="management-feature-copy"><span>Officer Accounts</span><strong data-overview-officer-count>0</strong><p>Active officer accounts</p></div>
+                            <div class="management-feature-actions muted-action"><span>Account access is admin-controlled</span></div>
+                        </article>
+                    </div>
+
+                    <div class="management-detail-grid">
+                        <section class="management-panel">
+                            <div class="management-panel-head"><div><span>CASE WORKFLOW</span><h3>Recent Complaint Queue</h3></div><a href="../complaints/complaints.html">Manage all</a></div>
+                            <div class="management-list" id="officerRecentComplaints"><div class="reference-empty">No complaints yet.</div></div>
+                        </section>
+                        <section class="management-panel">
+                            <div class="management-panel-head"><div><span>COMMUNICATION</span><h3>Officer Quick Actions</h3></div></div>
+                            <div class="officer-quick-actions">
+                                <a href="../announcements/announcements.html"><i class="fa-solid fa-plus"></i><div><strong>Post Announcement</strong><small>Publish a bulletin with an optional image.</small></div></a>
+                                <a href="../events/events.html"><i class="fa-solid fa-calendar-plus"></i><div><strong>Create Event</strong><small>Post an event and upload its background image.</small></div></a>
+                                <a href="../elections/elections.html"><i class="fa-solid fa-check-to-slot"></i><div><strong>Election Management</strong><small>Review candidates and manage election settings.</small></div></a>
+                                <a href="../complaints/complaints.html"><i class="fa-solid fa-reply"></i><div><strong>Reply to Complaints</strong><small>Update status, view attachments, and respond.</small></div></a>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="reference-bulletin-column">
+                <div class="reference-heading"><h2>Bulletin Board</h2><a href="../announcements/announcements.html">view... &gt;</a></div>
+                <article class="bulletin-preview-card" id="officerBulletinPreview"><div class="reference-empty">No announcement posted yet.</div></article>
+            </aside>
+        </section>
+    </section>
+</main></div></div>
+<footer class="officer-shared-footer"><div class="officer-footer-main"><div class="officer-footer-col"><h3>ABOUT US</h3><a href="../overview/overview.html">USC Officer Portal</a><a href="../organizational-chart/organizational-chart.html">University Student Council</a><a href="../organizational-chart/organizational-chart.html">Organizational Chart</a></div><div class="officer-footer-col"><h3>CONTACT US</h3><p><strong>Samar State University</strong></p><p>Arteche Boulevard</p><p>Catbalogan, Samar 6700</p></div><div class="officer-footer-col officer-footer-links"><a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a><a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a></div></div><div class="officer-footer-bottom"><img src="../shared/assets/SSUlogo.webp" alt="SSU Logo"/><img src="../shared/assets/USClogo.webp" alt="USC Logo"/><div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div></div></footer>
+<script src="../shared/js/nav-active.js"></script><script type="module" src="js/overview.js"></script><script type="module" src="../shared/js/admin-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body></html>

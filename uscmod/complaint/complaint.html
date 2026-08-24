@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SSU University Student Council - Student Complaint</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="css/complaints.css" />
+<link rel="stylesheet" href="../dashboard/css/dashboard.css" />
+<link rel="stylesheet" href="../dashboard/css/student-pages.css" />
+<link rel="stylesheet" href="../shared/profile-manager.css" />
+  <script src="../shared/app-config.js"></script>
+  <script type="module" src="../shared/auth-guard.js"></script>
+</head>
+<body class="student-app-shell complaint-student-shell">
+<header class="dashboard-header">
+  <div class="dashboard-brand">
+    <img src="assets/SSUlogo.webp" alt="SSU Seal" />
+    <img src="assets/USClogo.webp" alt="USC Logo" />
+    <div class="dashboard-brand-copy"><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</header>
+<div class="dashboard-layout page-layout">
+  <aside class="student-sidebar page-sidebar">
+    <div class="sidebar-student-mark"><i class="fa-solid fa-user-graduate"></i></div>
+    <nav class="student-nav" aria-label="Student module navigation">
+      <a class="student-nav-link" href="../dashboard/dashboard.html"><i class="fa-solid fa-briefcase"></i><span>Dashboard</span></a>
+      <a class="student-nav-link" href="../dashboard/bulletin.html"><i class="fa-solid fa-note-sticky"></i><span>Bulletin Board</span></a>
+      <a class="student-nav-link" href="../dashboard/election.html"><i class="fa-regular fa-building"></i><span>Election</span></a>
+      <a class="student-nav-link" href="../dashboard/events.html"><i class="fa-regular fa-calendar"></i><span>Events</span></a>
+      <a class="student-nav-link" href="../dashboard/organizational-chart.html"><i class="fa-solid fa-users"></i><span>Organizational Chart</span></a>
+      <a class="student-nav-link active" href="complaint.html"><i class="fa-solid fa-hand-holding-heart"></i><span>Student Complain</span></a>
+      <a class="student-nav-link" href="../dashboard/handbook.html"><i class="fa-solid fa-book-open"></i><span>Student Handbook</span></a>
+      <a class="student-nav-link" href="../dashboard/tracklist.html"><i class="fa-solid fa-list"></i><span>Student Tracklist</span></a>
+    </nav>
+    <button class="sidebar-logout" type="button" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+  </aside>
+  <div class="student-module-column">
+    <div class="student-module-toolbar">
+      <h1 id="studentModuleTitle">Student Complaint</h1>
+      <div class="dashboard-user-area">
+        <div class="notification-wrap">
+          <button class="header-icon-btn" id="notificationButton" type="button" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="notification-dot hidden" id="notificationDot"></span></button>
+          <div class="notification-panel hidden" id="notificationPanel"><div class="notification-panel-head"><strong>Notifications</strong><button id="markNotificationsRead" type="button">Mark all as read</button></div><div id="notificationList" class="notification-list"></div></div>
+        </div>
+        <div class="header-avatar" id="dashboardUserInitials">ST</div>
+        <span class="header-user-name" id="dashboardUserName">Student</span>
+      </div>
+    </div>
+    <main class="student-page-main complaint-module-main">
+      <section class="complaint-module-shell">
+        <div class="complaint-layout-grid">
+          <section class="complaint-main-card">
+            <div class="complaint-intro-bar">
+              <div class="complaint-intro-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+              <div>
+                <h2>Submit a Complaint</h2>
+                <p>Protecting your rights and welfare is our priority. Use this secure platform to voice your grievances, report issues, and help build a stronger, more accountable university community.</p>
+              </div>
+            </div>
+            <form class="complaint-form redesigned" id="complaintForm">
+              <div class="form-row two-col">
+                <div class="field"><label for="category">Complaint Category</label><div class="input-wrap select-wrap"><select id="category" name="category" required><option value="">Select category</option><option>Facilities Concern</option><option>Academic Concern</option><option>Faculty / Staff Concern</option><option>Student Misconduct</option><option>Bullying / Harassment</option><option>Organization Concern</option><option>Other Concern</option></select><i class="fa-solid fa-chevron-down"></i></div></div>
+                <div class="field"><label for="incidentDate">Date of Incident</label><div class="input-wrap"><input id="incidentDate" name="incidentDate" type="date" required /></div></div>
+              </div>
+              <div class="form-row two-col">
+                <div class="field"><label for="subject">Subject</label><div class="input-wrap"><input id="subject" maxlength="120" name="subject" required type="text" /></div></div>
+                <div class="field"><label for="department">College Department (auto-filled)</label><div class="input-wrap"><input id="department" name="department" type="text" readonly /></div></div>
+              </div>
+              <div class="field"><label for="details">Complaint Details</label><div class="textarea-wrap"><textarea id="details" maxlength="1000" name="details" placeholder="Your Complaint..." required></textarea><div class="char-counter"><span id="charCount">0</span>/1000</div></div></div>
+              <div class="field"><label>Attachment (Optional)</label><div class="upload-zone"><input accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx" hidden id="attachment" type="file" /><label class="upload-zone-label" for="attachment"><img id="attachmentSelectedPreview" class="selected-complaint-image-preview" alt="Selected complaint attachment preview" hidden /><i class="fa-regular fa-images"></i><strong>Upload a photo or document</strong><span>Images: JPG, PNG or WEBP up to 3MB. Documents: PDF, DOC or DOCX up to 5MB.</span><em id="fileName">No file selected</em><small class="attachment-error" id="attachmentError" role="alert" aria-live="polite" hidden></small></label></div></div>
+              <div class="form-actions end"><button class="btn submit-green" id="submitComplaintBtn" type="submit">SUBMIT</button></div>
+            </form>
+          </section>
+          <aside class="complaint-side-stack">
+            <section class="side-info-card"><h3>Quick Reminder!</h3><p><strong>Before You Submit</strong> keep the complaint direct, respectful, and focused on the concern.</p></section>
+            <section class="side-status-card"><h3>Complain Status</h3><div class="status-list modern"><div class="status-item"><span class="dot submitted"></span><span>Submitted</span></div><div class="status-item"><span class="dot review"></span><span>In Review</span></div><div class="status-item"><span class="dot progress"></span><span>In progress</span></div><div class="status-item"><span class="dot resolved"></span><span>Resolved</span></div><div class="status-item"><span class="dot closed"></span><span>Closed</span></div></div></section>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<footer class="site-footer shared-student-footer" id="contactSection">
+<div class="footer-main"><div class="footer-col"><h3>ABOUT US</h3><a href="../dashboard/organizational-chart.html">About us</a><a href="../dashboard/organizational-chart.html">University Student Council Seal</a><a href="../dashboard/organizational-chart.html">Organizational Chart</a></div><div class="footer-col"><h3>CONTACT US</h3><p><strong>Samar State University</strong></p><p>Arteche Boulevard</p><p>Catbalogan, Samar 6700</p></div><div class="footer-col footer-contact-links"><a href="https://ssu.edu.ph" rel="noopener" target="_blank"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a><a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a></div></div>
+<div class="footer-bottom"><img alt="SSU Logo" src="assets/SSUlogo.webp"/><img alt="USC Logo" src="assets/USClogo.webp"/><div class="footer-brand-copy"><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div></div>
+</footer>
+
+<div class="student-modal hidden" id="complaintSuccessModal">
+  <div class="student-modal-backdrop"></div>
+  <div class="student-modal-panel small centered">
+    <button class="student-modal-close" id="complaintModalClose" type="button">×</button>
+    <div class="success-badge"><i class="fa-solid fa-check"></i></div>
+    <h3>Thank You!</h3>
+    <p>Your complaint has been submitted successfully.</p>
+    <div class="success-note"><strong>Complaint Submitted!</strong><span>We will review your complaint and notify you of any updates.</span></div>
+    <button class="modal-btn primary full" id="viewComplaintStatusBtn" type="button">View Complaint Status</button>
+    <button class="modal-btn text" id="closeComplaintStatusBtn" type="button">Close</button>
+  </div>
+</div>
+
+<script type="module" src="../dashboard/js/notifications.js"></script>
+<script type="module" src="js/complaints.js"></script>
+<script type="module" src="../shared/profile-manager.js"></script>
+</body>
+</html>

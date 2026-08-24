@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USC Officer Organizational Chart</title>
+  <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+  <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+  <link rel="stylesheet" href="css/organizational-chart.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+<body class="officer-app-shell">
+<div class="page"><div class="app-shell">
+  <header class="top-banner">
+    <div class="brand-logos">
+      <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" class="brand-logo" />
+      <img src="../shared/assets/USClogo.webp" alt="USC Logo" class="brand-logo" />
+    </div>
+    <div class="brand">
+      <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+      <p>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</p>
+    </div>
+  </header>
+
+  <nav class="top-nav">
+    <div class="nav-left">
+      <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open sidebar" aria-expanded="false"><span class="grid-icon"></span></button>
+      <div class="module-title-wrap"><h2>Organizational Chart</h2><span>Officer Portal</span></div>
+    </div>
+    <div class="nav-right">
+      <div class="bell"><i class="fa-regular fa-bell"></i></div>
+      <div class="avatar"></div>
+      <span data-admin-name>USC Officer</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-overlay" data-sidebar-overlay></div>
+  <main class="layout">
+    <aside class="sidebar officer-reference-sidebar">
+      <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+      <nav class="officer-module-nav" aria-label="Officer modules">
+        <a class="nav-btn" href="../overview/overview.html"><span class="icon"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+        <a class="nav-btn" href="../announcements/announcements.html"><span class="icon"><i class="fa-solid fa-note-sticky"></i></span><span>Bulletin Board Center</span></a>
+        <a class="nav-btn" href="../elections/elections.html"><span class="icon"><i class="fa-regular fa-rectangle-list"></i></span><span>Election Management</span></a>
+        <a class="nav-btn" href="../events/events.html"><span class="icon"><i class="fa-regular fa-calendar"></i></span><span>Events</span></a>
+        <a class="nav-btn" href="../organizational-chart/organizational-chart.html"><span class="icon"><i class="fa-solid fa-users"></i></span><span>Organizational Chart</span></a>
+        <a class="nav-btn" href="../complaints/complaints.html"><span class="icon"><i class="fa-solid fa-message"></i></span><span>Complaints Management</span></a>
+      </nav>
+      <button class="nav-btn logout-btn" type="button" onclick="logoutOfficer()"><span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span><span>Logout</span></button>
+    </aside>
+
+    <section class="main officer-org-main">
+      <section class="officer-org-card">
+        <div class="officer-org-bg"></div>
+        <div class="officer-org-shade"></div>
+        <div class="officer-org-content">
+          <div class="org-title-block">
+            <span>UNIVERSITY STUDENT COUNCIL</span>
+            <h1>Organizational Chart</h1>
+            <p>Officer-side view of the council structure. This page stays inside the Officer Portal.</p>
+          </div>
+
+          <div class="org-tree" aria-label="University Student Council organizational chart">
+            <div class="org-row org-row-top">
+              <article class="org-node org-node-president">
+                <div class="org-avatar"><i class="fa-solid fa-user"></i></div>
+                <strong>President</strong><small>University Student Council</small>
+              </article>
+            </div>
+
+            <div class="org-branch branch-top"></div>
+
+            <div class="org-row org-row-mid">
+              <article class="org-node"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><strong>Vice President</strong><small>Executive Support</small></article>
+              <article class="org-node"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><strong>Secretary</strong><small>Records & Documentation</small></article>
+              <article class="org-node"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><strong>Treasurer</strong><small>Financial Management</small></article>
+              <article class="org-node"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><strong>Auditor</strong><small>Audit & Compliance</small></article>
+              <article class="org-node"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><strong>P.R.O.</strong><small>Public Relations</small></article>
+            </div>
+
+            <div class="org-row org-row-low">
+              <article class="org-node compact"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><strong>Business Manager</strong><small>Projects & Resources</small></article>
+              <article class="org-node compact"><div class="org-avatar"><i class="fa-solid fa-user"></i></div><strong>Sergeant-at-Arms</strong><small>Order & Discipline</small></article>
+              <article class="org-node compact"><div class="org-avatar"><i class="fa-solid fa-users"></i></div><strong>Department Representatives</strong><small>College Representatives</small></article>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+</div></div>
+
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col"><h3>ABOUT US</h3><a href="../overview/overview.html">USC Officer Portal</a><a href="../organizational-chart/organizational-chart.html">University Student Council</a><a href="../organizational-chart/organizational-chart.html">Organizational Chart</a></div>
+    <div class="officer-footer-col"><h3>CONTACT US</h3><p><strong>Samar State University</strong></p><p>Arteche Boulevard</p><p>Catbalogan, Samar 6700</p></div>
+    <div class="officer-footer-col officer-footer-links"><a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a><a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a></div>
+  </div>
+  <div class="officer-footer-bottom"><img src="../shared/assets/SSUlogo.webp" alt="SSU Logo"/><img src="../shared/assets/USClogo.webp" alt="USC Logo"/><div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div></div>
+</footer>
+
+<script src="../shared/js/nav-active.js"></script>
+<script type="module" src="../shared/js/admin-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+</html>

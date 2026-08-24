@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>USC Events</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/dashboard.css" rel="stylesheet"/>
+  <link href="css/student-pages.css" rel="stylesheet"/>
+<link rel="stylesheet" href="../shared/profile-manager.css" />
+  <script src="../shared/app-config.js"></script>
+  <script type="module" src="../shared/auth-guard.js"></script>
+</head>
+<body class="student-app-shell">
+<header class="dashboard-header">
+  <div class="dashboard-brand">
+    <img alt="SSU Seal" src="assets/SSUlogo.webp"/>
+    <img alt="USC Logo" src="assets/USClogo.webp"/>
+    <div class="dashboard-brand-copy">
+      <strong>SSU UNIVERSITY STUDENT COUNCIL</strong>
+      <span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span>
+    </div>
+  </div>
+</header>
+
+<div class="dashboard-layout page-layout">
+  <aside class="student-sidebar page-sidebar">
+    <div class="sidebar-student-mark"><i class="fa-solid fa-user-graduate"></i></div>
+    <nav class="student-nav">
+      <a class="student-nav-link" href="dashboard.html"><i class="fa-solid fa-briefcase"></i><span>Dashboard</span></a>
+      <a class="student-nav-link" href="bulletin.html"><i class="fa-solid fa-note-sticky"></i><span>Bulletin Board</span></a>
+      <a class="student-nav-link" href="election.html"><i class="fa-regular fa-building"></i><span>Election</span></a>
+      <a class="student-nav-link active" href="events.html"><i class="fa-regular fa-calendar"></i><span>Events</span></a>
+      <a class="student-nav-link" href="organizational-chart.html"><i class="fa-solid fa-users"></i><span>Organizational Chart</span></a>
+      <a class="student-nav-link" href="../complaint/complaint.html"><i class="fa-solid fa-hand-holding-heart"></i><span>Student Complain</span></a>
+      <a class="student-nav-link" href="../dashboard/handbook.html"><i class="fa-solid fa-book-open"></i><span>Student Handbook</span></a>
+      <a class="student-nav-link" href="tracklist.html"><i class="fa-solid fa-list"></i><span>Student Tracklist</span></a>
+    </nav>
+    <button class="sidebar-logout" id="studentLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+  </aside>
+
+  <div class="student-module-column">
+    <div class="student-module-toolbar">
+      <h1 id="studentModuleTitle">Events</h1>
+      <div class="dashboard-user-area">
+        <div class="notification-wrap">
+          <button aria-label="Notifications" class="header-icon-btn" id="notificationButton" type="button">
+            <i class="fa-solid fa-bell"></i><span class="notification-dot hidden" id="notificationDot"></span>
+          </button>
+          <div class="notification-panel hidden" id="notificationPanel">
+            <div class="notification-panel-head"><strong>Notifications</strong><button id="markNotificationsRead" type="button">Mark all as read</button></div>
+            <div class="notification-list" id="notificationList"></div>
+          </div>
+        </div>
+        <div class="header-avatar" id="dashboardUserInitials">ST</div>
+        <span class="header-user-name" id="dashboardUserName">Student</span>
+      </div>
+    </div>
+
+    <main class="student-page-main events-page-main" id="eventsPageMain">
+      <div class="events-snap-viewport" id="eventsSnapViewport">
+        <div class="events-snap-track" id="eventsSnapTrack">
+          <!-- Section 1: full-bleed event highlight -->
+          <section class="events-snap-section events-highlight-section" id="eventsHighlightSection" aria-label="USC event highlights">
+            <div class="events-highlight-module" id="eventsHighlightModule">
+              <div class="events-highlight-background" id="eventsHighlightBackground"></div>
+              <div class="events-highlight-shade"></div>
+
+              <div class="events-highlight-content">
+                <div class="events-highlight-kicker">HIGHLIGHTS</div>
+
+                <div class="events-highlight-center" id="eventsHighlightCenter">
+                  <span class="events-highlight-school">Samar State University</span>
+                  <h2 id="eventsHighlightTitle">Loading Events</h2>
+                  <p class="events-highlight-venue" id="eventsHighlightVenue">Please wait...</p>
+                  <time class="events-highlight-date" id="eventsHighlightDate">—</time>
+                </div>
+
+                <button class="events-highlight-nav events-highlight-prev" id="eventsHighlightPrev" type="button" aria-label="Previous event">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="events-highlight-nav events-highlight-next" id="eventsHighlightNext" type="button" aria-label="Next event">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <div class="events-highlight-bottom">
+                  <div class="events-highlight-dots" id="eventsHighlightDots" aria-label="Event pages"></div>
+                  <button class="events-section-jump events-scroll-down" id="eventsScrollDown" type="button" aria-label="Show upcoming events">
+                    <span>Scroll down</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 2: upcoming events + calendar -->
+          <section class="events-snap-section events-upcoming-section" id="eventsUpcomingSection" aria-labelledby="eventsUpcomingHeading">
+            <div class="events-upcoming-background" id="eventsUpcomingBackground"></div>
+            <div class="events-upcoming-shade"></div>
+
+            <button class="events-section-jump events-scroll-up" id="eventsScrollUp" type="button" aria-label="Return to event highlight">
+              <i class="fa-solid fa-chevron-up"></i>
+              <span>Scroll up</span>
+            </button>
+
+            <div class="events-upcoming-content">
+              <div class="events-upcoming-copy">
+                <h2 id="eventsUpcomingHeading">Upcoming Events</h2>
+                <p>Every event is an opportunity to voice your ideas, learn new skills, and connect with fellow students. Step up and be part of the change.</p>
+                <div class="events-upcoming-list" id="eventsUpcomingList"></div>
+              </div>
+
+              <div class="events-upcoming-calendar" aria-label="Events calendar">
+                <div class="events-calendar-header">
+                  <button id="eventsCalendarPrev" type="button" aria-label="Previous month"><i class="fa-solid fa-caret-left"></i></button>
+                  <strong id="eventsCalendarTitle">Month Year</strong>
+                  <button id="eventsCalendarNext" type="button" aria-label="Next month"><i class="fa-solid fa-caret-right"></i></button>
+                </div>
+                <div class="events-calendar-grid" id="eventsCalendarGrid"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<footer class="site-footer shared-student-footer" id="contactSection">
+  <div class="footer-main">
+    <div class="footer-col">
+      <h3>ABOUT US</h3>
+      <a href="organizational-chart.html">About us</a>
+      <a href="organizational-chart.html">University Student Council Seal</a>
+      <a href="organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="footer-col footer-contact-links">
+      <a href="https://ssu.edu.ph" rel="noopener" target="_blank"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <img alt="SSU Logo" src="assets/SSUlogo.webp"/>
+    <img alt="USC Logo" src="assets/USClogo.webp"/>
+    <div class="footer-brand-copy">
+      <strong>SSU UNIVERSITY STUDENT COUNCIL</strong>
+      <span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/notifications.js" type="module"></script>
+<script src="js/events.js" type="module"></script>
+<script type="module" src="../shared/profile-manager.js"></script>
+</body>
+</html>

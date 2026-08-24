@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSU USC Portal - Login</title>
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="../shared/app-config.js"></script>
+</head>
+<body>
+  <header class="top-header">
+    <a class="header-brand" href="../dashboard/handbook.html" aria-label="SSU University Student Council home">
+      <span class="brand-seals">
+        <img src="assets/SSUlogo.webp" alt="SSU Seal" />
+        <img src="assets/USClogo.webp" alt="USC Seal" />
+      </span>
+      <span class="brand-name"><strong>SSU</strong><span class="brand-divider">|</span><strong>USC</strong></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Primary navigation">
+      <div class="nav-line" aria-hidden="true"></div>
+      <div class="nav-links">
+        <a href="../dashboard/handbook.html" class="nav-link">Student Handbook</a>
+        <a href="../dashboard/handbook.html#about-section" class="nav-link">Organizational Chart</a>
+        <a href="../dashboard/handbook.html#about-section" class="nav-link">About Us</a>
+        <a href="index.html" class="nav-link active" aria-current="page">Login</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="login-page">
+    <section class="glass-panel" aria-label="USC school account access">
+      <button class="logo-wrap" type="button" aria-label="USC portal">
+        <img src="assets/USClogo.webp" alt="University Student Council Logo" />
+      </button>
+
+      <div id="signin-view" class="view active">
+        <div class="auth-panel">
+          <div class="school-account-copy">
+            <span class="school-account-kicker">SCHOOL-PROVIDED ACCOUNT</span>
+            <h2>Sign in to SSU USC</h2>
+            <p>Use your institutional email or Student ID and the password issued by the school.</p>
+          </div>
+
+          <form class="form-stack signin-stack" id="signinForm">
+            <div class="input-box">
+              <i class="fa-regular fa-user" aria-hidden="true"></i>
+              <input
+                type="text"
+                id="signinIdentifier"
+                name="signinIdentifier"
+                placeholder="Institutional Email or Student ID"
+                autocomplete="username"
+                inputmode="text"
+                required
+              />
+            </div>
+
+            <div class="input-box password-input-box">
+              <i class="fa-solid fa-lock leading-icon" aria-hidden="true"></i>
+              <input
+                type="password"
+                id="signinPassword"
+                name="signinPassword"
+                placeholder="School-issued Password"
+                autocomplete="current-password"
+                required
+              />
+              <button class="password-toggle" type="button" data-password-toggle="signinPassword" onclick="return togglePasswordVisibility(this)" aria-label="Show password" aria-pressed="false">
+                <i class="fa-regular fa-eye" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <button class="btn btn-blue signin-btn" type="submit">SIGN IN</button>
+            <button class="account-switch forgot-password-btn" id="forgotPasswordBtn" type="button">Forgot or reset password?</button>
+          </form>
+
+          <div class="account-provision-note">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+            <span>Student accounts are created by the school. There is no public account registration. You may change your school-issued password after signing in.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-text">Leadership | Excellence | Discipline | Service</div>
+    </section>
+  </main>
+
+  <script src="../shared/password-visibility.js"></script>
+  <script type="module" src="js/index.js"></script>
+</body>
+</html>

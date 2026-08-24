@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>USC Student Tracklist</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/student-pages.css" />
+<link rel="stylesheet" href="../shared/profile-manager.css" />
+  <script src="../shared/app-config.js"></script>
+  <script type="module" src="../shared/auth-guard.js"></script>
+</head>
+<body class="student-app-shell">
+  <header class="dashboard-header">
+    <div class="dashboard-brand">
+      <img src="assets/SSUlogo.webp" alt="SSU Seal" />
+      <img src="assets/USClogo.webp" alt="USC Logo" />
+      <div class="dashboard-brand-copy">
+        <strong>SSU UNIVERSITY STUDENT COUNCIL</strong>
+        <span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard-layout page-layout">
+    <aside class="student-sidebar page-sidebar">
+      <div class="sidebar-student-mark"><i class="fa-solid fa-user-graduate"></i></div>
+      <nav class="student-nav" aria-label="Student module navigation">
+        <a class="student-nav-link" href="dashboard.html"><i class="fa-solid fa-briefcase"></i><span>Dashboard</span></a>
+        <a class="student-nav-link" href="bulletin.html"><i class="fa-solid fa-note-sticky"></i><span>Bulletin Board</span></a>
+        <a class="student-nav-link" href="election.html"><i class="fa-regular fa-building"></i><span>Election</span></a>
+        <a class="student-nav-link" href="events.html"><i class="fa-regular fa-calendar"></i><span>Events</span></a>
+        <a class="student-nav-link" href="organizational-chart.html"><i class="fa-solid fa-users"></i><span>Organizational Chart</span></a>
+        <a class="student-nav-link" href="../complaint/complaint.html"><i class="fa-solid fa-hand-holding-heart"></i><span>Student Complain</span></a>
+        <a class="student-nav-link" href="../dashboard/handbook.html"><i class="fa-solid fa-book-open"></i><span>Student Handbook</span></a>
+        <a class="student-nav-link active" href="tracklist.html"><i class="fa-solid fa-list"></i><span>Student Tracklist</span></a>
+      </nav>
+      <button class="sidebar-logout" id="studentLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
+      <div aria-hidden="true" class="sidebar-session-info">
+        <span id="sidebarGreeting">HELLO,<br />STUDENT</span>
+        <small id="sidebarStudentId">Student</small>
+      </div>
+    </aside>
+
+    <div class="student-module-column">
+      <div class="student-module-toolbar">
+        <h1 id="studentModuleTitle">Student Tracklist</h1>
+        <div class="dashboard-user-area">
+          <div class="notification-wrap">
+            <button class="header-icon-btn" id="notificationButton" type="button" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="notification-dot hidden" id="notificationDot"></span></button>
+            <div class="notification-panel hidden" id="notificationPanel"><div class="notification-panel-head"><strong>Notifications</strong><button id="markNotificationsRead" type="button">Mark all as read</button></div><div class="notification-list" id="notificationList"></div></div>
+          </div>
+          <div class="header-avatar" id="dashboardUserInitials">ST</div>
+          <span class="header-user-name" id="dashboardUserName">Student</span>
+        </div>
+      </div>
+
+      <main class="student-page-main tracklist-page-main">
+        <section class="tracklist-surface">
+          <section class="track-overview-banner">
+            <div class="track-overview-head">My Tracking Overview</div>
+            <div class="track-overview-body">
+              <div class="track-overview-cards">
+                <article class="mini-overview-card"><small>Total Complaints</small><strong id="overviewTotalComplaints">00</strong><span>All Submitted Records</span></article>
+                <article class="mini-overview-card"><small>Active Cases</small><strong id="overviewActiveComplaints">00</strong><span>Submitted / In Review</span></article>
+                <article class="mini-overview-card"><small>Resolved Cases</small><strong id="overviewResolvedComplaints">00</strong><span>Resolved / Closed</span></article>
+                <article class="mini-overview-card"><small>Election Records</small><strong id="overviewElectionRecords">00</strong><span>Submitted Votes</span></article>
+              </div>
+              <div class="track-overview-illustration"><img src="assets/trio.png" alt="Students" /></div>
+            </div>
+          </section>
+
+          <div class="track-dashboard-grid">
+            <section class="track-card complaint-highlight-card">
+              <div class="section-label-row compact"><h2>Complaint Tracking</h2></div>
+              <div id="complaintPreviewHost" class="track-card-content"></div>
+            </section>
+
+            <section class="track-card recent-activity-card">
+              <div class="section-label-row compact"><h2>Recent Activity</h2></div>
+              <div id="recentActivityHost" class="activity-list"></div>
+            </section>
+
+            <section class="track-card election-participation-card">
+              <div class="section-label-row compact"><h2>Election Participation</h2></div>
+              <div id="votePreviewHost" class="track-card-content"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="site-footer shared-student-footer" id="contactSection">
+    <div class="footer-main">
+      <div class="footer-col"><h3>ABOUT US</h3><a href="organizational-chart.html">About us</a><a href="organizational-chart.html">University Student Council Seal</a><a href="organizational-chart.html">Organizational Chart</a></div>
+      <div class="footer-col"><h3>CONTACT US</h3><p><strong>Samar State University</strong></p><p>Arteche Boulevard</p><p>Catbalogan, Samar 6700</p></div>
+      <div class="footer-col footer-contact-links"><a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a><a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a></div>
+    </div>
+    <div class="footer-bottom"><img src="assets/SSUlogo.webp" alt="SSU Logo" /><img src="assets/USClogo.webp" alt="USC Logo" /><div class="footer-brand-copy"><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div></div>
+  </footer>
+
+  <div class="student-modal hidden" id="trackComplaintsModal">
+    <div class="student-modal-backdrop" data-close-modal="trackComplaintsModal"></div>
+    <div class="student-modal-panel wide">
+      <button class="student-modal-close" data-close-modal="trackComplaintsModal" type="button">×</button>
+      <div class="student-modal-head"><div class="student-modal-icon blue"><i class="fa-regular fa-rectangle-list"></i></div><div><h3>Complaint Tracking Details</h3><p>This is a list of all the complaints you have submitted.</p></div></div>
+      <div class="tracklist-table-wrap"><table class="student-data-table"><thead><tr><th>Complaint ID</th><th>Subject</th><th>Category</th><th>Date Submitted</th><th>Status</th><th>Last Update</th><th>Action</th></tr></thead><tbody id="complaintTableBody"></tbody></table></div>
+      <div class="student-modal-footer"><div class="student-modal-note" id="complaintTableMeta">Showing 1 to 0 of 0 entries</div><button class="modal-btn outline" data-close-modal="trackComplaintsModal" type="button">Close</button></div>
+    </div>
+  </div>
+
+  <div class="student-modal hidden" id="trackElectionModal">
+    <div class="student-modal-backdrop" data-close-modal="trackElectionModal"></div>
+    <div class="student-modal-panel wide">
+      <button class="student-modal-close" data-close-modal="trackElectionModal" type="button">×</button>
+      <div class="student-modal-head"><div class="student-modal-icon indigo"><i class="fa-solid fa-check-to-slot"></i></div><div><h3>Election Participation Details</h3><p>Here is your election participation record. Your candidate selections remain confidential and are never shown here.</p></div></div>
+      <div class="election-summary-strip"><div><small>Election Name</small><strong id="voteElectionName">USC Election</strong></div><div><small>Date</small><strong id="voteElectionDate">—</strong></div><div><small>Time</small><strong id="voteElectionTime">—</strong></div><div><small>Status</small><span class="status-pill success">Vote Recorded</span></div></div>
+      <div class="tracklist-table-wrap"><table class="student-data-table"><thead><tr><th>Position</th><th>Voted Candidate</th><th>Course / Year</th><th>Party / Affiliation</th></tr></thead><tbody id="voteTableBody"></tbody></table></div>
+      <div class="student-modal-footer"><div class="student-modal-note"><i class="fa-regular fa-circle-check"></i> Thank you for exercising your right to vote!</div><button class="modal-btn outline" data-close-modal="trackElectionModal" type="button">Close</button></div>
+    </div>
+  </div>
+
+
+  <div class="student-modal hidden complaint-detail-modal" id="complaintDetailModal">
+    <div class="student-modal-backdrop" id="complaintDetailBackdrop"></div>
+    <div class="student-modal-panel complaint-detail-panel">
+      <button class="student-modal-close" id="complaintDetailClose" type="button">×</button>
+      <div class="student-modal-head complaint-detail-head">
+        <div class="student-modal-icon blue"><i class="fa-regular fa-rectangle-list"></i></div>
+        <div>
+          <h3>Complaint Details</h3>
+          <p>Here are the complete details of your complaint, including USC officer replies and status updates.</p>
+        </div>
+      </div>
+
+      <div class="complaint-detail-grid">
+        <section class="complaint-info-card">
+          <div class="detail-card-title">COMPLAINT INFORMATION</div>
+          <div class="complaint-info-body">
+            <div class="detail-field"><small>Complaint ID</small><strong id="detailComplaintId">—</strong></div>
+            <div class="detail-field"><small>Subject</small><strong id="detailComplaintSubject">—</strong></div>
+            <div class="detail-field"><small>Category</small><span class="detail-category-pill" id="detailComplaintCategory">—</span></div>
+            <div class="detail-field"><small>Date Submitted</small><strong id="detailComplaintDate">—</strong></div>
+            <div class="detail-field"><small>Submitted By</small><div class="submitted-by-block"><div class="submitted-avatar" id="detailSubmittedInitials">ST</div><div><strong id="detailSubmittedName">Student</strong><span id="detailSubmittedId">—</span></div></div></div>
+            <div class="detail-field"><small>Contact Email</small><strong id="detailSubmittedEmail">—</strong></div>
+          </div>
+        </section>
+
+        <div class="complaint-detail-middle">
+          <section class="complaint-description-card">
+            <div class="detail-card-title">COMPLAINT DESCRIPTION</div>
+            <div class="complaint-description-box" id="detailComplaintDescription">—</div>
+          </section>
+          <section class="complaint-attachment-card">
+            <div class="detail-card-title">ATTACHMENTS</div>
+            <div class="attachment-detail-host" id="detailAttachmentHost"></div>
+          </section>
+          <section class="complaint-officer-replies-card">
+            <div class="detail-card-title">OFFICER REPLIES</div>
+            <div class="officer-replies-host" id="detailOfficerReplies"></div>
+          </section>
+        </div>
+
+        <section class="complaint-history-card">
+          <div class="detail-card-title">STATUS HISTORY</div>
+          <div class="complaint-status-timeline" id="detailStatusTimeline"></div>
+        </section>
+      </div>
+
+      <div class="complaint-detail-footer">
+        <button class="modal-btn outline" id="complaintDetailCloseBottom" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="student-modal hidden attachment-image-modal" id="complaintAttachmentPreviewModal">
+    <div class="student-modal-backdrop" id="complaintAttachmentPreviewBackdrop"></div>
+    <div class="attachment-image-panel">
+      <button class="student-modal-close" id="complaintAttachmentPreviewClose" type="button">×</button>
+      <h3 id="complaintAttachmentPreviewTitle">Complaint attachment</h3>
+      <img id="complaintAttachmentPreviewImage" alt="Complaint attachment preview" />
+    </div>
+  </div>
+
+  <script type="module" src="js/notifications.js"></script>
+  <script type="module" src="js/student-shell.js"></script>
+  <script type="module" src="js/tracklist.js"></script>
+<script type="module" src="../shared/profile-manager.js"></script>
+</body>
+</html>

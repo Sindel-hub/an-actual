@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Student - USC Admin</title>
+  <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+  <link rel="stylesheet" href="css/student-registration.css" />
+  <script src="../../shared/app-config.js"></script>
+</head>
+<body>
+  <main class="page">
+    <div class="top-row no-print">
+      <a href="../admin-dashboard/users.html" class="back-link">← Back to User Directory</a>
+    </div>
+
+    <section class="panel no-print">
+      <h1>Register Student Account</h1>
+      <p>Create and manage a school-issued student account. Student access and election eligibility are controlled by the student's current academic standing.</p>
+      <div id="bridgeStatus" class="status-box">Preparing account provisioning...</div>
+
+      <form id="studentForm" class="form-grid">
+        <label>Student ID<input id="studentId" inputmode="numeric" maxlength="6" placeholder="260001" required /></label>
+        <label>Full Name<input id="name" placeholder="Juan Dela Cruz" required /></label>
+        <label>Institutional Email<input id="email" type="email" placeholder="juan.delacruz@ssu.edu.ph" required /></label>
+        <label>College / Campus
+          <select id="college" required>
+            <option value="">Select college or campus</option>
+          </select>
+        </label>
+        <label class="program-field">Program
+          <select id="program" required disabled>
+            <option value="">Select college/campus first</option>
+          </select>
+          <small>Programs are loaded from Samar State University's published undergraduate program list.</small>
+        </label>
+        <label>Year Level
+          <select id="yearLevel" required>
+            <option value="">Select year level</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+            <option value="5th Year">5th Year</option>
+          </select>
+        </label>
+        <label>Student Standing
+          <select id="studentStanding" required>
+            <option value="active">Active / Enrolled</option>
+            <option value="leave">Leave of Absence</option>
+            <option value="inactive">Inactive / Not Enrolled</option>
+            <option value="graduated">Graduated</option>
+            <option value="transferred">Transferred / Changed School</option>
+            <option value="withdrawn">Withdrawn</option>
+            <option value="eliminated">Eliminated / Dismissed</option>
+          </select>
+          <small id="standingHint">Active students may access the portal. Election eligibility is controlled separately below.</small>
+        </label>
+        <label>Election Eligibility
+          <select id="eligibility"><option value="true">Eligible voter</option><option value="false">Not eligible to vote</option></select>
+        </label>
+        <div class="form-action"><button id="createBtn" type="submit">Create Student Account</button></div>
+      </form>
+    </section>
+
+    <section class="panel no-print">
+      <h2>Student Password Recovery</h2>
+      <p>If a student forgets the password, enter the Student ID or institutional email and send a Firebase password-reset link to the institutional email.</p>
+      <div class="reset-row">
+        <input id="resetIdentifier" placeholder="Student ID or institutional email" />
+        <button id="resetBtn" type="button">Send Password Reset Link</button>
+      </div>
+    </section>
+
+    <section id="slipSection" class="slip-section" hidden>
+      <div id="slip"></div>
+      <div class="slip-actions no-print">
+        <button id="printSlipBtn" type="button">Print Login Slip</button>
+        <button id="downloadSlipBtn" type="button">Download Login Slip</button>
+        <button id="clearSlipBtn" type="button" class="secondary">Clear</button>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+  <script type="module" src="js/student-registration.js"></script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USC Election Module</title>
+  <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+  <link rel="stylesheet" href="css/elections.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+
+<body class="officer-app-shell">
+  <div class="page">
+    <div class="page-label">Dashboard</div>
+
+    <div class="app-shell">
+      <header class="top-banner">
+        <div class="brand-logos">
+          <img src="../shared/assets/SSUlogo.webp" alt="Samar State University Logo" class="brand-logo"
+            onerror="this.style.display='none'" />
+          <img src="../shared/assets/USClogo.webp" alt="University Student Council Logo" class="brand-logo"
+            onerror="this.style.display='none'" />
+        </div>
+
+        <div class="brand">
+          <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+          <p>LEADERSHIP | EXCELLENCE | DISCIPLINE | SERVICE</p>
+        </div>
+      </header>
+
+      <nav class="top-nav">
+        <div class="nav-left">
+          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open sidebar"
+            aria-expanded="false">
+            <span class="grid-icon"></span>
+          </button>
+          <div class="breadcrumb">Elections</div>
+        </div>
+
+        <div class="nav-right">
+          <div class="user-badge">USC ELECTION PANEL</div>
+          <div class="avatar"></div>
+          <span data-admin-name>USC Officer</span>
+          <div class="bell">🔔</div>
+        </div>
+      </nav>
+
+      <div class="sidebar-overlay" data-sidebar-overlay></div>
+
+      <main class="layout">
+        <aside class="sidebar officer-reference-sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <nav class="officer-module-nav" aria-label="Officer modules">
+                        <a class="nav-btn" href="../overview/overview.html"><span class="icon"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                        <a class="nav-btn" href="../announcements/announcements.html"><span class="icon"><i class="fa-solid fa-note-sticky"></i></span><span>Bulletin Board Center</span></a>
+                        <a class="nav-btn" href="../elections/elections.html"><span class="icon"><i class="fa-regular fa-rectangle-list"></i></span><span>Election Management</span></a>
+                        <a class="nav-btn" href="../events/events.html"><span class="icon"><i class="fa-regular fa-calendar"></i></span><span>Events</span></a>
+                        <a class="nav-btn" href="../organizational-chart/organizational-chart.html"><span class="icon"><i class="fa-solid fa-users"></i></span><span>Organizational Chart</span></a>
+                        <a class="nav-btn" href="../complaints/complaints.html"><span class="icon"><i class="fa-solid fa-message"></i></span><span>Complaints Management</span></a>
+                    </nav>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutOfficer()"><span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span><span>Logout</span></button>
+                </aside>
+
+        <section class="main">
+          <section class="hero">
+            <div class="hero-left">
+              <div class="hero-title">
+                <div>
+                  <h1>Election Management Module</h1>
+                  <p>Configure the full election schedule, review candidate applications, monitor turnout, and publish official election information from one control center.</p>
+                </div>
+                <div class="hero-tag">Schedule-driven phases</div>
+              </div>
+
+              <div class="stats">
+                <div class="stat-card">
+                  <div class="stat-label">Active Election</div>
+                  <div class="stat-value" id="activeElectionCount">01</div>
+                  <div class="stat-sub">Current cycle</div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-label">Candidates</div>
+                  <div class="stat-value blue" id="candidateCount">0</div>
+                  <div class="stat-sub">Validated list</div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-label">Votes Cast</div>
+                  <div class="stat-value" id="votesCastCount">0</div>
+                  <div class="stat-sub">Current submissions</div>
+                </div>
+
+                <div class="stat-card">
+                  <div class="stat-label">Turnout</div>
+                  <div class="stat-value green" id="turnoutPercent">0%</div>
+                  <div class="stat-sub">Participation rate</div>
+                </div>
+              </div>
+
+              <div class="hero-actions">
+                <button class="btn primary" id="openScheduleManagerBtn" type="button">Configure Election Schedule</button>
+                <button class="btn light" data-nav="../overview/overview.html">Back to Dashboard</button>
+              </div>
+            </div>
+
+            <div class="side-panel">
+              <div class="panel-head">
+                <h3>Election Status</h3>
+                <span class="panel-link">Live monitoring</span>
+              </div>
+
+              <div class="progress-wrap">
+                <div class="progress-label">
+                  <span id="electionStatusTitle">USC General Election</span>
+                  <span id="turnoutProgressLabel">0 / 0</span>
+                </div>
+                <div class="bar">
+                  <div class="bar-fill" id="turnoutBar" style="width:0%;">0%</div>
+                </div>
+              </div>
+
+              <div class="note-box" style="margin-top:0;">
+                <strong>Automatic phase enforcement</strong>
+                <p>The current date and time determine which election functions are available. Students can always view election information, while registration, review, voting, and result publication follow the configured schedule.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="grid-2">
+            <article class="card schedule-management-card" id="scheduleManagementCard">
+              <div class="card-head">
+                <div>
+                  <h3>Election Schedule Management</h3>
+                  <span>Set the opening and closing date/time for every election phase.</span>
+                </div>
+                <span class="phase-status-pill" id="activePhaseBadge">Checking schedule...</span>
+              </div>
+
+              <div class="card-body">
+                <div class="field">
+                  <label>Election Title</label>
+                  <input id="electionTitleInput" type="text" value="USC General Election" />
+                </div>
+
+                <div class="field">
+                  <label>Active Phase <small>(automatic)</small></label>
+                  <input id="electionStatusInput" class="read-only-field" type="text" value="Not scheduled" readonly aria-readonly="true" />
+                </div>
+
+                <div class="schedule-flow-note">
+                  <strong>Automatic flow</strong>
+                  <span>USC Officer sets the election schedule → Schedule is saved in the database → System checks the current date and time → Active election phase is determined → Election pages update automatically.</span>
+                </div>
+
+                <div class="phase-schedule-grid">
+                  <section class="phase-schedule-item" data-phase-card="registration">
+                    <div class="phase-schedule-heading"><span>1</span><div><strong>Candidate Registration</strong><small>Students may submit candidacy applications.</small></div></div>
+                    <div class="grid-2">
+                      <div class="field"><label>Opens</label><input id="registrationStartInput" type="datetime-local" /></div>
+                      <div class="field"><label>Closes</label><input id="registrationEndInput" type="datetime-local" /></div>
+                    </div>
+                  </section>
+
+                  <section class="phase-schedule-item" data-phase-card="review">
+                    <div class="phase-schedule-heading"><span>2</span><div><strong>Application Review</strong><small>Officers may approve or reject submitted applications.</small></div></div>
+                    <div class="grid-2">
+                      <div class="field"><label>Opens</label><input id="applicationReviewStartInput" type="datetime-local" /></div>
+                      <div class="field"><label>Closes</label><input id="applicationReviewEndInput" type="datetime-local" /></div>
+                    </div>
+                  </section>
+
+                  <section class="phase-schedule-item" data-phase-card="publication">
+                    <div class="phase-schedule-heading"><span>3</span><div><strong>Candidate Publication</strong><small>Approved candidates become visible to students.</small></div></div>
+                    <div class="grid-2">
+                      <div class="field"><label>Opens</label><input id="candidatePublicationStartInput" type="datetime-local" /></div>
+                      <div class="field"><label>Closes</label><input id="candidatePublicationEndInput" type="datetime-local" /></div>
+                    </div>
+                  </section>
+
+                  <section class="phase-schedule-item" data-phase-card="voting">
+                    <div class="phase-schedule-heading"><span>4</span><div><strong>Voting</strong><small>The official ballot is enabled only during this window.</small></div></div>
+                    <div class="grid-2">
+                      <div class="field"><label>Opens</label><input id="votingStartInput" type="datetime-local" /></div>
+                      <div class="field"><label>Closes</label><input id="votingEndInput" type="datetime-local" /></div>
+                    </div>
+                  </section>
+
+                  <section class="phase-schedule-item" data-phase-card="results">
+                    <div class="phase-schedule-heading"><span>5</span><div><strong>Result Publication</strong><small>Official results become visible to students.</small></div></div>
+                    <div class="grid-2">
+                      <div class="field"><label>Opens</label><input id="resultPublicationStartInput" type="datetime-local" /></div>
+                      <div class="field"><label>Closes</label><input id="resultPublicationEndInput" type="datetime-local" /></div>
+                    </div>
+                  </section>
+                </div>
+
+                <div class="schedule-validation-message" id="scheduleValidationMessage" aria-live="polite"></div>
+
+                <div class="row-actions">
+                  <button class="mini-btn primary" id="saveElectionSettingsBtn">Save Election Schedule</button>
+                  <button class="mini-btn light" id="scrollToCandidateReviewBtn" type="button">Review Candidate Applications</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <h3>Turnout & Result Snapshot</h3>
+                <span>Basic election review</span>
+              </div>
+
+              <div class="card-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Position</th>
+                      <th>Leading Candidate</th>
+                      <th>Votes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="electionResultsBody">
+                    <tr>
+                      <td colspan="3">No votes yet.</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="row-actions" style="margin-top:14px;">
+                  <button class="mini-btn primary" id="viewFullTallyBtn" type="button">View Full Tally</button>
+                  <button class="mini-btn light" id="exportSummaryBtn" type="button">Export Summary</button>
+                </div>
+
+                <div class="grid-2" style="margin-top:14px;">
+                  <article class="card" style="box-shadow:none;">
+                    <div class="card-head">
+                      <h3>President Analytics</h3>
+                      <span>Vote counts</span>
+                    </div>
+                    <div class="card-body" id="presidentAnalytics"></div>
+                  </article>
+
+                  <article class="card" style="box-shadow:none;">
+                    <div class="card-head">
+                      <h3>Vice President Analytics</h3>
+                      <span>Vote counts</span>
+                    </div>
+                    <div class="card-body" id="viceAnalytics"></div>
+                  </article>
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <section class="card candidate-review-card" id="candidateReviewCard">
+            <div class="card-head">
+              <div>
+                <h3>Candidate Application Review</h3>
+                <span>Applications remain viewable at all times. Approve/Reject controls are enabled only during the scheduled Application Review phase.</span>
+              </div>
+              <span class="phase-status-pill" id="candidateReviewPhaseBadge">Review locked</span>
+            </div>
+            <div class="card-body">
+              <div class="candidate-review-summary">
+                <span><strong id="candidateApplicationTotal">0</strong> Total</span>
+                <span><strong id="candidateApprovedTotal">0</strong> Approved</span>
+                <span><strong id="candidatePendingTotal">0</strong> Under Review</span>
+                <span><strong id="candidateRejectedTotal">0</strong> Rejected</span>
+              </div>
+              <div class="candidate-review-list" id="candidateReviewList">
+                <div class="review-empty-state">No candidate applications have been submitted yet.</div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col">
+      <h3>ABOUT US</h3>
+      <a href="../overview/overview.html">USC Officer Portal</a>
+      <a href="../organizational-chart/organizational-chart.html">University Student Council</a>
+      <a href="../organizational-chart/organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="officer-footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="officer-footer-col officer-footer-links">
+      <a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="officer-footer-bottom">
+    <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" />
+    <img src="../shared/assets/USClogo.webp" alt="USC Logo" />
+    <div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</footer>
+
+    <script src="../shared/js/nav-active.js"></script>
+  <script type="module" src="js/elections.js"></script>
+  <script type="module" src="../shared/js/admin-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+
+</html>

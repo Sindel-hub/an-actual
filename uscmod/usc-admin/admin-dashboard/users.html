@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>USC Admin User Directory</title>
+    <link rel="stylesheet" href="../shared/css/usc-theme.css" />
+    <link rel="stylesheet" href="css/admin-dashboard.css" />
+    <link rel="stylesheet" href="../shared/css/officer-ui.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="../../shared/profile-manager.css" />
+  <script src="../../shared/app-config.js"></script>
+  <script type="module" src="../../shared/auth-guard.js"></script>
+</head>
+<body class="officer-app-shell">
+    <div class="page">
+        <div class="page-label">Admin Control</div>
+        <div class="app-shell">
+            <header class="top-banner">
+                <div class="brand-logos">
+                    <img src="../shared/assets/SSUlogo.webp" alt="Samar State University Logo" class="brand-logo" onerror="this.style.display='none'" />
+                    <img src="../shared/assets/USClogo.webp" alt="University Student Council Logo" class="brand-logo" onerror="this.style.display='none'" />
+                </div>
+                <div class="brand">
+                    <h1>SSU UNIVERSITY STUDENT COUNCIL</h1>
+                    <p>LEADERSHIP | EXCELLENCE | DISCIPLINE | SERVICE</p>
+                </div>
+            </header>
+            <nav class="top-nav">
+                <div class="nav-left">
+                    <div class="breadcrumb">User Directory</div>
+                </div>
+                <div class="nav-right">
+                    <div class="user-badge admin-pill">ADMIN ACCESS PANEL</div>
+                    <div class="avatar" data-admin-initials>UA</div>
+                    <div class="admin-headline">
+                        <span data-admin-name>USC Admin</span>
+                        <small data-admin-role>System Administrator</small>
+                    </div>
+                </div>
+            </nav>
+            <main class="layout">
+                <aside class="sidebar">
+                    <div class="officer-sidebar-mark"><i class="fa-solid fa-user-tie"></i></div>
+                    <h2>Admin Modules</h2>
+                    <div class="sidebar-group">
+                        <a class="nav-btn" data-admin-nav href="admin-dashboard.html"><span>🛡️</span><span>Overview</span></a>
+                        <a class="nav-btn" data-admin-nav href="users.html"><span>👥</span><span>User Directory</span></a>
+                        <a class="nav-btn" data-admin-nav href="queue.html"><span>📥</span><span>Registration Queue</span></a>
+                        <a class="nav-btn" data-admin-nav href="audit.html"><span>📜</span><span>Audit & Reports</span></a>
+                    </div>
+                    <div class="note-box admin-note">
+                        <strong>Admin restrictions</strong>
+                        <ul>
+                            <li>Only accounts carrying the trusted <strong>admin</strong> server-side role may use this dashboard.</li>
+                            <li>The admin account cannot access officer modules.</li>
+                            <li>The admin controls account access only.</li>
+                        </ul>
+                    </div>
+                    <div class="admin-summary">
+                        <div class="info-strip">
+                            <strong>Purpose of this module</strong>
+                            <p>Approve accounts, promote officers, suspend access, verify identity, keep notes, and maintain an audit trail.</p>
+                        </div>
+                    </div>
+                    <button class="nav-btn logout-btn" type="button" onclick="logoutAdminOnly()"><span>↩</span><span>Log Out</span></button>
+                </aside>
+                <section class="main">
+
+<section class="hero">
+    <article class="card hero-card">
+        <div class="hero-title-row">
+            <div>
+                <h1>User Directory</h1>
+                <p>This module is for account search, role updates, office assignments, verification control, status management, and bulk actions. It is now separated from queue review and audit viewing so the admin page stays usable.</p>
+            </div>
+            <div class="hero-tag">Access control</div>
+        </div>
+        <div class="filter-shell">
+            <div class="filters-grid">
+                <div class="field"><label for="userSearchInput">Search</label><input id="userSearchInput" type="text" placeholder="Name, institutional email, ID, office, notes" /></div>
+                <div class="field"><label for="roleFilterSelect">Role</label><select id="roleFilterSelect"><option value="all">All roles</option><option value="student">Students</option><option value="officer">Officers</option></select></div>
+                <div class="field"><label for="statusFilterSelect">Status</label><select id="statusFilterSelect"><option value="all">All statuses</option><option value="approved">Approved</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div>
+                <div class="field"><label for="verifiedFilterSelect">Voter verification</label><select id="verifiedFilterSelect"><option value="all">All users</option><option value="verified">Verified</option><option value="unverified">Unverified</option></select></div>
+                <div class="field"><label for="activeFilterSelect">Activity</label><select id="activeFilterSelect"><option value="all">Any</option><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+                <div class="field"><label for="recentFilterSelect">Recent</label><select id="recentFilterSelect"><option value="all">Any time</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></select></div>
+            </div>
+            <div class="selection-bar">
+                <div class="toolbar"><span class="quick-badge" id="directoryCountBadge">0 accounts</span><span class="quick-badge" id="selectedCountBadge">0 selected</span></div>
+                <div class="toolbar">
+                    <div class="field"><label for="sortSelect">Sort</label><select id="sortSelect"><option value="name">Name</option><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="recent-login">Recent login</option><option value="role">Role</option></select></div>
+                    <button type="button" class="btn light" id="exportFilteredButton">Export filtered CSV</button>
+                    <button type="button" class="btn light" id="exportSelectedButton">Export selected CSV</button>
+                </div>
+            </div>
+        </div>
+    </article>
+    <article class="card hero-card" id="schoolAccountProvisionCard">
+        <div class="card-head card-head-stack"><div><h3>School Account Provisioning</h3><span>Create school-issued Student or USC Officer logins and print/download their login slips.</span></div><span class="quick-badge">Admin only</span></div>
+        
+        <div class="action-group" style="margin-top:12px"><a class="btn primary" href="../student-registration/student-registration.html">Create Student Account</a><a class="btn success" href="../student-registration/officer-registration.html">Create Officer Account</a></div>
+    </article>
+    <article class="card hero-card">
+        <div class="card-head card-head-stack"><div><h3>Bulk actions</h3><span>Apply common account updates to the selected users only.</span></div></div>
+        <div class="filters-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="field"><label for="bulkRoleSelect">Bulk role</label><select id="bulkRoleSelect"><option value="">No role change</option><option value="student">Student</option><option value="officer">Officer</option></select></div>
+            <div class="field"><label for="bulkStatusSelect">Bulk status</label><select id="bulkStatusSelect"><option value="">No status change</option><option value="approved">Approved</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div>
+            <div class="field"><label for="bulkVerificationSelect">Voter verification</label><select id="bulkVerificationSelect"><option value="__no_change__">No change</option><option value="verified">Verified</option><option value="unverified">Unverified</option></select></div>
+            <div class="field"><label for="bulkActiveSelect">Active state</label><select id="bulkActiveSelect"><option value="__no_change__">No change</option><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+            <div class="field"><label for="bulkOfficePositionInput">Office position</label><input id="bulkOfficePositionInput" type="text" placeholder="USC Officer" /></div>
+            <div class="field"><label for="bulkEffectiveDateInput">Effective date</label><input id="bulkEffectiveDateInput" type="date" /></div>
+        </div>
+        <div class="field-stack" style="margin-top: 12px;"><label for="bulkReasonInput">Bulk reason</label><textarea id="bulkReasonInput" placeholder="Required when changing role, status, or active access."></textarea></div>
+        <div class="action-group" style="margin-top: 12px;"><button type="button" class="btn primary" id="applyBulkButton">Apply bulk changes</button><button type="button" class="btn light" id="approveSelectedButton">Approve selected</button><button type="button" class="btn danger-light" id="suspendSelectedButton">Suspend selected</button><button type="button" class="btn light" id="clearSelectionButton">Clear selection</button></div>
+    </article>
+</section>
+<section class="card-grid two">
+    <article class="card">
+        <div class="card-head"><div><h3>Account directory</h3><span>Choose a user from the table to edit their account details.</span></div><span class="quick-badge" id="listStatusText">Live from Firestore</span></div>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th><input id="toggleAllUsers" type="checkbox" /></th><th>Name</th><th>Student ID</th><th>Role</th><th>Status</th><th>Verified</th><th>Active</th><th>Office</th><th>Last login</th><th>Open</th></tr></thead>
+                <tbody id="usersTableBody"></tbody>
+            </table>
+        </div>
+    </article>
+    <article class="card sticky-card">
+        <div id="editorEmptyState" class="empty-state"><strong>No user selected</strong><span>Select an account from the directory to open the detail editor.</span></div>
+        <div id="editorPanel" class="hidden">
+            <div class="card-head"><div><h3>Selected user</h3><span>Focused account editing for one user at a time.</span></div><span class="quick-badge" id="rolePreviewBadge">Student access</span></div>
+            <div class="user-summary">
+                <div class="restriction-banner hidden" id="selectedUserRestrictionBanner">This protected admin account cannot be demoted or suspended from this page.</div>
+                <div class="user-summary-top"><div class="profile-avatar" id="selectedUserInitials">--</div><div><div class="user-header-row"><span class="user-name" id="selectedUserName">—</span><span class="role-badge role-student" id="selectedUserRole">Role: student</span><span class="status-badge status-approved" id="selectedUserStatus">Status: approved</span></div><p class="subtext" id="selectedUserEmail">—</p><p class="subtext" id="selectedUserId">Student ID: —</p></div></div>
+                <div class="detail-grid">
+                    <div class="detail-chip"><strong>Route after login</strong><span id="selectedUserRoute">Student dashboard</span></div>
+                    <div class="detail-chip"><strong>Office assignment</strong><span id="selectedUserOfficePosition">—</span></div>
+                    <div class="detail-chip"><strong>Registered at</strong><span id="selectedUserRegisteredAt">—</span></div>
+                    <div class="detail-chip"><strong>Last login</strong><span id="selectedUserLastLogin">—</span></div>
+                    <div class="detail-chip"><strong>Last activity</strong><span id="selectedUserLastActivity">—</span></div>
+                    <div class="detail-chip"><strong>Role effective date</strong><span id="selectedUserEffectiveDate">—</span></div>
+                    <div class="detail-chip"><strong>Year level</strong><span id="selectedUserYearLevel">—</span></div>
+                    <div class="detail-chip"><strong>Student standing</strong><span id="selectedUserStanding">—</span></div>
+                    <div class="detail-chip"><strong>Voter verification</strong><span id="selectedUserVerified">—</span></div>
+                    <div class="detail-chip"><strong>Account active</strong><span id="selectedUserActive">—</span></div>
+                    <div class="detail-chip"><strong>Complaint count</strong><span id="selectedUserComplaintCount">—</span></div>
+                    <div class="detail-chip"><strong>Complaint status</strong><span id="selectedUserComplaintStatus">—</span></div>
+                    <div class="detail-chip"><strong>Vote status</strong><span id="selectedUserVoteStatus">—</span></div>
+                    <div class="detail-chip"><strong>Last update</strong><span id="selectedUserLastUpdate">—</span></div>
+                </div>
+                <form id="roleEditorForm" class="field-stack">
+                    <div class="filters-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+                        <div class="field"><label for="targetRoleSelect">Target role</label><select id="targetRoleSelect"><option value="student">Student</option><option value="officer">Officer</option></select></div>
+                        <div class="field"><label for="accountStatusSelect">Account status</label><select id="accountStatusSelect"><option value="approved">Approved</option><option value="pending">Pending</option><option value="suspended">Suspended</option></select></div>
+                        <div class="field"><label for="officePositionInput">Office position</label><input id="officePositionInput" type="text" placeholder="USC Officer" /></div>
+                        <div class="field"><label for="effectiveDateInput">Effective date</label><input id="effectiveDateInput" type="date" /></div>
+                        <div class="field"><label for="yearLevelSelect">Year level</label><select id="yearLevelSelect"><option value="">Not set</option><option value="1st Year">1st Year</option><option value="2nd Year">2nd Year</option><option value="3rd Year">3rd Year</option><option value="4th Year">4th Year</option><option value="5th Year">5th Year</option></select></div>
+                        <div class="field"><label for="studentStandingSelect">Student standing</label><select id="studentStandingSelect"><option value="active">Active / Enrolled</option><option value="leave">Leave of Absence</option>
+            <option value="inactive">Inactive / Not Enrolled</option><option value="graduated">Graduated</option><option value="transferred">Transferred / Changed School</option><option value="withdrawn">Withdrawn</option><option value="eliminated">Eliminated / Dismissed</option></select></div>
+                    </div>
+                    <div class="subtext" id="standingAccessNote">Changing standing away from Active immediately removes portal access and voting eligibility.</div>
+                    <div class="toggle-row"><div class="toggle-box"><span>Verified voter</span><input id="verifiedToggle" type="checkbox" /></div><div class="toggle-box"><span>Account active</span><input id="activeToggle" type="checkbox" /></div></div>
+                    <div class="field"><label for="adminNotesInput">Admin notes</label><textarea id="adminNotesInput" placeholder="Internal admin notes for this account."></textarea></div>
+                    <div class="field"><label for="roleChangeNote">Change reason</label><textarea id="roleChangeNote" placeholder="Required when changing role, status, or active access."></textarea></div>
+                    <div class="subtext" id="roleRoutePreview">Route after next login: Student dashboard</div>
+                    <div class="editor-actions"><button type="submit" class="btn primary" id="saveRoleButton">Save user updates</button><button type="button" class="btn light" id="approveUserButton">Approve</button><button type="button" class="btn danger-light" id="suspendUserButton">Suspend</button><button type="button" class="btn light" id="reactivateUserButton">Reactivate</button><button type="button" class="btn light" id="demoteToStudentButton">Return to student</button></div>
+                    <div class="subtext" id="saveFeedbackText">Ready for admin updates.</div>
+                    <div class="subtext" id="lastActionSummary">Select a user to begin.</div>
+                </form>
+            </div>
+        </div>
+    </article>
+</section>
+
+                </section>
+            </main>
+        </div>
+    </div>
+    
+<footer class="officer-shared-footer">
+  <div class="officer-footer-main">
+    <div class="officer-footer-col">
+      <h3>ABOUT US</h3>
+      <a href="../overview/overview.html">USC Officer Portal</a>
+      <a href="../../dashboard/organizational-chart.html">University Student Council</a>
+      <a href="../../dashboard/organizational-chart.html">Organizational Chart</a>
+    </div>
+    <div class="officer-footer-col">
+      <h3>CONTACT US</h3>
+      <p><strong>Samar State University</strong></p>
+      <p>Arteche Boulevard</p>
+      <p>Catbalogan, Samar 6700</p>
+    </div>
+    <div class="officer-footer-col officer-footer-links">
+      <a href="https://ssu.edu.ph" target="_blank" rel="noopener"><i class="fa-brands fa-square-facebook"></i> ssu.edu.ph</a>
+      <a href="mailto:ssu.studentcouncil@ssu.edu.ph"><i class="fa-regular fa-envelope"></i> ssu.studentcouncil@ssu.edu.ph</a>
+    </div>
+  </div>
+  <div class="officer-footer-bottom">
+    <img src="../shared/assets/SSUlogo.webp" alt="SSU Logo" />
+    <img src="../shared/assets/USClogo.webp" alt="USC Logo" />
+    <div><strong>SSU UNIVERSITY STUDENT COUNCIL</strong><span>LEADERSHIP&nbsp;&nbsp;|&nbsp;&nbsp;EXCELLENCE&nbsp;&nbsp;|&nbsp;&nbsp;DISCIPLINE&nbsp;&nbsp;|&nbsp;&nbsp;SERVICE</span></div>
+  </div>
+</footer>
+
+    <script type="module" src="js/admin-users.js"></script>
+    <script type="module" src="../shared/js/admin-only-auth.js"></script>
+<script type="module" src="../../shared/profile-manager.js"></script>
+</body>
+</html>
