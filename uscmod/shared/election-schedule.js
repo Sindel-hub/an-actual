@@ -213,70 +213,291 @@ function legacyState(settings = {}, now = new Date()) {
   };
 }
 
-export function getElectionScheduleState(settings = {}, nowValue = new Date()) {
-  const now = electionDate(nowValue) || new Date();
-  const windows = phaseWindows(settings);
-  if (!windows.every((phase) => phase.start && phase.end)) {
-    return legacyState(settings, now);
+export function getElectionScheduleState(
+  settings = {},
+  nowValue = new Date()
+) {
+  const now =
+    electionDate(nowValue) ||
+    new Date();
+
+  const windows =
+    phaseWindows(settings);
+
+
+  if (
+    !windows.every(
+      (phase) =>
+        phase.start &&
+        phase.end
+    )
+  ) {
+    return legacyState(
+      settings,
+      now
+    );
   }
 
-  const activePhase = windows.find((phase) => now >= phase.start && now < phase.end) || null;
-  const nextPhase = windows.find((phase) => now < phase.start) || null;
-  const first = windows[0];
-  const last = windows[windows.length - 1];
+
+  const getWindow = (id) =>
+    windows.find(
+      (phase) =>
+        phase.id === id
+    );
+
+
+  const registration =
+    getWindow("registration");
+
+  const review =
+    getWindow("review");
+
+  const publication =
+    getWindow("publication");
+
+  const voting =
+    getWindow("voting");
+
+  const results =
+    getWindow("results");
+
+
+  const within = (phase) =>
+    now >= phase.start &&
+    now < phase.end;
+
+
+  /*
+   * Each phase has its OWN state.
+   *
+   * Candidate Publication and Voting are
+   * intentionally independent.
+   */
+  const registrationOpen =
+    within(registration);
+
+  const reviewOpen =
+    within(review);
+
+  const candidatePublicationOpen =
+    within(publication);
+
+  const votingScheduleOpen =
+    within(voting);
+
+  const resultsOpen =
+    within(results);
+
+
+  /*
+   * Actual review completion.
+   */
+  const candidateReviewComplete =
+    settings?.candidateReviewComplete === true;
+
+
+  /*
+   * Voting requires BOTH:
+   *
+   * 1. Voting schedule currently open
+   * 2. Candidate review actually completed
+   *
+   * Candidate Publication has no role here.
+   */
+  const votingOpen =
+    votingScheduleOpen &&
+    candidateReviewComplete;
+
+
+  /*
+   * Candidate visibility follows only the
+   * Candidate Publication window.
+   */
+  const candidateVisible =
+    candidatePublicationOpen;
+
+
+  /*
+   * There can now be overlapping phases.
+   *
+   * If Candidate Publication and Voting
+   * are both active, Voting gets display
+   * priority because it is the more
+   * operationally important state.
+   */
+  let activePhase = null;
+
+  if (votingScheduleOpen) {
+    activePhase = voting;
+  } else if (resultsOpen) {
+    activePhase = results;
+  } else if (reviewOpen) {
+    activePhase = review;
+  } else if (registrationOpen) {
+    activePhase = registration;
+  } else if (candidatePublicationOpen) {
+    activePhase = publication;
+  }
+
+
+  /*
+   * Determine the next phase based on
+   * actual start time, not array order.
+   *
+   * Important now that phases may overlap.
+   */
+  const upcomingWindows =
+    windows
+      .filter(
+        (phase) =>
+          now < phase.start
+      )
+      .sort(
+        (left, right) =>
+          left.start.getTime() -
+          right.start.getTime()
+      );
+
+
+  const nextPhase =
+    upcomingWindows[0] ||
+    null;
+
+
+  const firstStart =
+    Math.min(
+      ...windows.map(
+        (phase) =>
+          phase.start.getTime()
+      )
+    );
+
+
+  const lastEnd =
+    Math.max(
+      ...windows.map(
+        (phase) =>
+          phase.end.getTime()
+      )
+    );
+
 
   let phaseId;
   let phaseLabel;
+
+
   if (activePhase) {
-    phaseId = activePhase.id;
-    phaseLabel = activePhase.label;
-  } else if (now < first.start) {
-    phaseId = "upcoming";
-    phaseLabel = "Election Schedule Upcoming";
-  } else if (now >= last.end) {
-    phaseId = "completed";
-    phaseLabel = "Election Cycle Completed";
+    phaseId =
+      activePhase.id;
+
+    phaseLabel =
+      activePhase.label;
+
+  } else if (
+    now.getTime() <
+    firstStart
+  ) {
+    phaseId =
+      "upcoming";
+
+    phaseLabel =
+      "Election Schedule Upcoming";
+
+  } else if (
+    now.getTime() >=
+    lastEnd
+  ) {
+    phaseId =
+      "completed";
+
+    phaseLabel =
+      "Election Cycle Completed";
+
   } else {
-    phaseId = "transition";
-    phaseLabel = nextPhase ? `Waiting for ${nextPhase.label}` : "Election Information";
+    phaseId =
+      "transition";
+
+    phaseLabel =
+      nextPhase
+        ? `Waiting for ${nextPhase.label}`
+        : "Election Information";
   }
 
-  const getWindow = (id) => windows.find((phase) => phase.id === id);
-  const registration = getWindow("registration");
-  const review = getWindow("review");
-  const publication = getWindow("publication");
-  const voting = getWindow("voting");
-  const results = getWindow("results");
 
-  const within = (phase) => now >= phase.start && now < phase.end;
+  /*
+   * Give a useful status when Voting's
+   * configured time has started but review
+   * is still incomplete.
+   */
+  let statusText =
+    phaseLabel;
+
+  if (
+    votingScheduleOpen &&
+    !candidateReviewComplete
+  ) {
+    statusText =
+      "Voting is scheduled, but candidate review must be completed before ballots can be submitted.";
+  }
+
 
   return {
-    scheduleComplete: true,
+    scheduleComplete:
+      true,
+
     phaseId,
+
     phaseLabel,
+
     activePhase,
+
     nextPhase,
+
     windows,
-    registrationOpen: within(registration),
-    reviewOpen: within(review),
-    candidatePublicationOpen: within(publication),
-    // Once candidates are officially published, their information remains available
-    // throughout voting/results and after the cycle for transparency.
-    candidateVisible: now >= publication.start,
-    votingOpen: within(voting),
-    resultsOpen: within(results),
-    // Once official results are published, keep them viewable as election information.
-    resultsVisible: now >= results.start,
-    statusText: phaseLabel
+
+
+    registrationOpen,
+
+    reviewOpen,
+
+
+    candidatePublicationOpen,
+
+    candidateVisible,
+
+
+    candidateReviewComplete,
+
+
+    /*
+     * Useful distinction:
+     *
+     * votingScheduleOpen = configured time
+     * votingOpen = actual permission to vote
+     */
+    votingScheduleOpen,
+
+    votingOpen,
+
+
+    resultsOpen,
+
+    resultsVisible:
+      now >= results.start,
+
+
+    statusText
   };
 }
-
 export function legacyStatusForState(state = {}) {
   switch (state.phaseId) {
     case "registration": return "Registration Open";
     case "review": return "Registration Closed";
     case "publication": return "Candidates Published";
-    case "voting": return "Voting Open";
+    case "voting":
+  return state.votingOpen
+    ? "Voting Open"
+    : "Voting Locked";
     case "results": return "Results Posted";
     case "completed": return "Closed";
     default: return "Scheduled";
