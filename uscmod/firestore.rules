@@ -512,12 +512,37 @@ service cloud.firestore {
     // Immutable administrator audit stream. Admins may append events, but no browser
     // client may alter or delete an existing event.
     match /audit_logs/{logId} {
-      allow read: if isAdmin();
-      allow create: if isAdmin()
-        && request.resource.data.actorUid == uid()
-        && request.resource.data.action is string;
-      allow update, delete: if false;
-    }
+
+  allow read: if isAdmin();
+
+  /*
+   * Admins can write normal audit records.
+   *
+   * Officers may ONLY create the specific
+   * Election Schedule Save audit entry.
+   */
+  allow create: if
+    request.resource.data.actorUid == uid()
+    && request.resource.data.action is string
+    && (
+      isAdmin()
+
+      ||
+
+      (
+        isOfficer()
+        && request.resource.data.action == "ELECTION_SCHEDULE_SAVE"
+        && request.resource.data.source == "browser-election-runtime"
+        && request.resource.data.target is string
+        && request.resource.data.target.matches(
+          "^elections/[a-z0-9][a-z0-9-]{2,79}$"
+        )
+        && request.resource.data.createdAt == request.time
+      )
+    );
+
+  allow update, delete: if false;
+}
 
     // Legacy election collections are fail-closed. Migrate old records before production use.
     match /votes/{docId} { allow read, write: if false; }
