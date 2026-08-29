@@ -213,56 +213,347 @@ function applyProfileToPage(profile) {
 }
 
 function createProfileTrigger() {
-  const existing = document.getElementById("officerProfileTrigger") || document.querySelector("[data-usc-profile-trigger]");
+
+  /*
+   * ======================================================
+   * 1. EXISTING PROFILE BUTTON
+   * ======================================================
+   *
+   * Dashboard already has #officerProfileTrigger.
+   * Keep using it without rebuilding the UI.
+   */
+  const existing =
+    document.getElementById("officerProfileTrigger") ||
+    document.querySelector("[data-usc-profile-trigger]");
+
+
   if (existing) {
-    existing.dataset.uscProfileTrigger = "true";
-    existing.classList.add("usc-profile-trigger");
-    existing.setAttribute("aria-controls", "uscProfileDrawer");
-    existing.setAttribute("aria-expanded", "false");
+
+    existing.dataset.uscProfileTrigger =
+      "true";
+
+    existing.classList.add(
+      "usc-profile-trigger"
+    );
+
+    existing.setAttribute(
+      "aria-controls",
+      "uscProfileDrawer"
+    );
+
+    existing.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+
     return existing;
   }
 
-  const studentAvatar = document.getElementById("dashboardUserInitials");
-  const studentName = document.getElementById("dashboardUserName");
-  if (studentAvatar && studentName && studentAvatar.parentElement === studentName.parentElement) {
-    const trigger = document.createElement("button");
-    trigger.type = "button";
-    trigger.className = "usc-profile-trigger usc-student-profile-trigger";
-    trigger.dataset.uscProfileTrigger = "true";
-    trigger.setAttribute("aria-label", "Open profile");
-    trigger.setAttribute("aria-controls", "uscProfileDrawer");
-    trigger.setAttribute("aria-expanded", "false");
-    studentAvatar.parentElement.insertBefore(trigger, studentAvatar);
-    trigger.append(studentAvatar, studentName);
-    const chevron = document.createElement("i");
-    chevron.className = "fa-solid fa-chevron-down usc-profile-trigger-chevron";
-    chevron.setAttribute("aria-hidden", "true");
-    trigger.appendChild(chevron);
+
+  /*
+   * ======================================================
+   * 2. STUDENT DASHBOARD
+   * ======================================================
+   */
+
+  const studentAvatar =
+    document.getElementById(
+      "dashboardUserInitials"
+    );
+
+  const studentName =
+    document.getElementById(
+      "dashboardUserName"
+    );
+
+
+  if (
+    studentAvatar &&
+    studentName &&
+    studentAvatar.parentElement ===
+      studentName.parentElement
+  ) {
+
+    const trigger =
+      document.createElement("button");
+
+
+    trigger.type =
+      "button";
+
+    trigger.className =
+      "usc-profile-trigger usc-student-profile-trigger";
+
+    trigger.dataset.uscProfileTrigger =
+      "true";
+
+    trigger.setAttribute(
+      "aria-label",
+      "Open profile"
+    );
+
+    trigger.setAttribute(
+      "aria-controls",
+      "uscProfileDrawer"
+    );
+
+    trigger.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+
+
+    studentAvatar.parentElement.insertBefore(
+      trigger,
+      studentAvatar
+    );
+
+
+    trigger.append(
+      studentAvatar,
+      studentName
+    );
+
+
+    const chevron =
+      document.createElement("i");
+
+    chevron.className =
+      "fa-solid fa-chevron-down usc-profile-trigger-chevron";
+
+    chevron.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+
+    trigger.appendChild(
+      chevron
+    );
+
+
     return trigger;
   }
 
-  const navRight = document.querySelector(".nav-right");
-  if (!navRight) return null;
-  const avatar = navRight.querySelector(":scope > .avatar, :scope > [data-admin-initials]");
-  if (!avatar) return null;
-  const adminHeadline = navRight.querySelector(":scope > .admin-headline");
-  const directName = navRight.querySelector(":scope > [data-admin-name]");
-  const copy = adminHeadline || directName;
-  if (!copy) return null;
 
-  const trigger = document.createElement("button");
-  trigger.type = "button";
-  trigger.className = "usc-profile-trigger usc-top-profile-trigger";
-  trigger.dataset.uscProfileTrigger = "true";
-  trigger.setAttribute("aria-label", "Open profile");
-  trigger.setAttribute("aria-controls", "uscProfileDrawer");
-  trigger.setAttribute("aria-expanded", "false");
-  navRight.insertBefore(trigger, avatar);
-  trigger.append(avatar, copy);
-  const chevron = document.createElement("i");
-  chevron.className = "fa-solid fa-chevron-down usc-profile-trigger-chevron";
-  chevron.setAttribute("aria-hidden", "true");
-  trigger.appendChild(chevron);
+  /*
+   * ======================================================
+   * 3. OFFICER MODULE TOOLBAR
+   * ======================================================
+   *
+   * Bulletin Board, Elections, Events,
+   * Organizational Chart and Complaints currently
+   * contain only:
+   *
+   * <div class="avatar"></div>
+   *
+   * Upgrade that static avatar into the SAME kind of
+   * interactive profile control used on Dashboard.
+   */
+
+  const navRight =
+    document.querySelector(
+      ".nav-right"
+    );
+
+
+  if (!navRight) {
+    return null;
+  }
+
+
+  const avatar =
+    navRight.querySelector(
+      ":scope > .avatar, :scope > [data-admin-initials]"
+    );
+
+
+  if (!avatar) {
+    return null;
+  }
+
+
+  /*
+   * Look for an existing officer name/role block.
+   */
+  let copy =
+    navRight.querySelector(
+      ":scope > .admin-headline"
+    ) ||
+    navRight.querySelector(
+      ":scope > [data-admin-name]"
+    );
+
+
+  /*
+   * Most Officer modules currently don't have one,
+   * so create it automatically.
+   */
+  if (!copy) {
+
+    copy =
+      document.createElement(
+        "span"
+      );
+
+
+    copy.className =
+      "admin-headline officer-profile-trigger-copy";
+
+
+    const name =
+      document.createElement(
+        "span"
+      );
+
+
+    name.dataset.adminName =
+      "";
+
+    name.textContent =
+      currentProfile?.fullName ||
+      currentProfile?.email ||
+      "USC Officer";
+
+
+    const role =
+      document.createElement(
+        "small"
+      );
+
+
+    role.dataset.adminRole =
+      "";
+
+    role.textContent =
+      currentProfile
+        ? roleLabel(
+            currentProfile
+          )
+        : "Officer";
+
+
+    copy.append(
+      name,
+      role
+    );
+  }
+
+
+  /*
+   * Build the clickable profile button.
+   */
+  const trigger =
+    document.createElement(
+      "button"
+    );
+
+
+  trigger.type =
+    "button";
+
+
+  trigger.id =
+    "officerProfileTrigger";
+
+
+  trigger.className =
+    [
+      "officer-profile-trigger",
+      "usc-profile-trigger",
+      "usc-top-profile-trigger"
+    ].join(" ");
+
+
+  trigger.dataset.uscProfileTrigger =
+    "true";
+
+
+  trigger.setAttribute(
+    "aria-label",
+    "Open officer profile"
+  );
+
+
+  trigger.setAttribute(
+    "aria-controls",
+    "uscProfileDrawer"
+  );
+
+
+  trigger.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+
+  /*
+   * Insert the new button exactly where
+   * the old static avatar was.
+   */
+  navRight.insertBefore(
+    trigger,
+    avatar
+  );
+
+
+  /*
+   * Move existing avatar into button.
+   * The profile photo loaded earlier remains intact.
+   */
+  trigger.appendChild(
+    avatar
+  );
+
+
+  /*
+   * Move/create officer name + position.
+   */
+  trigger.appendChild(
+    copy
+  );
+
+
+  /*
+   * Add dropdown arrow.
+   */
+  const chevron =
+    document.createElement(
+      "i"
+    );
+
+
+  chevron.className =
+    [
+      "fa-solid",
+      "fa-chevron-down",
+      "officer-profile-chevron",
+      "usc-profile-trigger-chevron"
+    ].join(" ");
+
+
+  chevron.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  trigger.appendChild(
+    chevron
+  );
+
+
+  /*
+   * Apply the real account information to the
+   * elements we just created.
+   */
+  if (currentProfile) {
+    applyProfileToPage(
+      currentProfile
+    );
+  }
+
+
   return trigger;
 }
 
