@@ -151,7 +151,11 @@ function toMillis(value) {
 
 function validateSchedule(raw = {}) {
   const dates = {};
-  for (const field of SCHEDULE_FIELDS) dates[field] = toDate(raw[field], field);
+
+  for (const field of SCHEDULE_FIELDS) {
+    dates[field] = toDate(raw[field], field);
+  }
+
   const pairs = [
     ["registrationStart", "registrationEnd", "Candidate Registration"],
     ["applicationReviewStart", "applicationReviewEnd", "Application Review"],
@@ -159,17 +163,68 @@ function validateSchedule(raw = {}) {
     ["votingStart", "votingEnd", "Voting"],
     ["resultPublicationStart", "resultPublicationEnd", "Result Publication"]
   ];
+
+  /*
+   * Validate each individual schedule window.
+   */
   for (const [start, end, label] of pairs) {
-    if (dates[end] <= dates[start]) throw new HttpsError("invalid-argument", `${label} must close after it opens.`);
-  }
-  for (let i = 1; i < pairs.length; i += 1) {
-    if (dates[pairs[i][0]] < dates[pairs[i - 1][1]]) {
-      throw new HttpsError("invalid-argument", `${pairs[i][2]} cannot begin before ${pairs[i - 1][2]} closes.`);
+    if (dates[end] <= dates[start]) {
+      throw new HttpsError(
+        "invalid-argument",
+        `${label} must close after it opens.`
+      );
     }
   }
-  return Object.fromEntries(Object.entries(dates).map(([key, value]) => [key, Timestamp.fromDate(value)]));
-}
 
+  /*
+   * Candidate Registration -> Application Review
+   */
+  if (dates.applicationReviewStart < dates.registrationEnd) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Application Review cannot begin before Candidate Registration closes."
+    );
+  }
+
+  /*
+   * Application Review -> Candidate Publication
+   */
+  if (dates.candidatePublicationStart < dates.applicationReviewEnd) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Candidate Publication cannot begin before Application Review closes."
+    );
+  }
+
+  /*
+   * Application Review -> Voting
+   *
+   * NO Candidate Publication End -> Voting Start dependency.
+   */
+  if (dates.votingStart < dates.applicationReviewEnd) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Voting cannot begin before Application Review closes. Candidate Publication may overlap with Voting."
+    );
+  }
+
+  /*
+   * Voting -> Result Publication
+   */
+  if (dates.resultPublicationStart < dates.votingEnd) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Result Publication cannot begin before Voting closes."
+    );
+  }
+
+  return Object.fromEntries(
+    Object.entries(dates).map(([key, value]) => [
+      key,
+      Timestamp.fromDate(value)
+    ])
+  );
+}
 function electionLifecycle(election, nowMs = Date.now()) { return lifecycleFromSchedule(election, nowMs); }
 
 function inWindow(election, startField, endField, nowMs = Date.now()) {
