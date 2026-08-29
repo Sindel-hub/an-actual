@@ -947,3 +947,512 @@ input[readonly]:focus, textarea[readonly]:focus, .read-only-field:focus {
   box-shadow: none !important;
 }
 #candidateListDisplay { min-height: 150px; line-height: 1.55; resize: vertical; }
+
+/* =========================================================
+   OFFICER DASHBOARD MOBILE TOOLBAR FIX
+   Keeps:
+   - sidebar menu button
+   - search bar
+   - notification bell
+   - profile avatar
+   ========================================================= */
+
+@media (max-width: 820px) {
+
+  /* Main toolbar */
+  body.officer-reference-dashboard .reference-dashboard-toolbar {
+    position: relative !important;
+
+    width: 100% !important;
+    height: 56px !important;
+    min-height: 56px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 8px !important;
+
+    padding: 7px 9px !important;
+    margin: 0 0 10px !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #e1ebf2 !important;
+    border-radius: 14px !important;
+
+    box-shadow:
+      0 5px 16px rgba(18, 66, 98, 0.07) !important;
+
+    overflow: visible !important;
+    z-index: 900 !important;
+  }
+
+
+  /* =====================================================
+     LEFT SIDE
+     hamburger + search
+     ===================================================== */
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .reference-search-wrap {
+
+    position: relative !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    flex: 1 1 auto !important;
+
+    gap: 7px !important;
+
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+
+    overflow: visible !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+
+  /* Sidebar / hamburger button */
+  body.officer-reference-dashboard .sidebar-toggle {
+
+    display: grid !important;
+    place-items: center !important;
+
+    position: relative !important;
+
+    width: 38px !important;
+    height: 38px !important;
+
+    min-width: 38px !important;
+
+    flex: 0 0 38px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    border-radius: 10px !important;
+
+    background: #edf6fb !important;
+
+    cursor: pointer !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    z-index: 5 !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .sidebar-toggle:hover {
+
+    background: #e1f2f9 !important;
+  }
+
+
+  /* Keep grid icon visible */
+  body.officer-reference-dashboard .grid-icon {
+
+    display: block !important;
+
+    width: 18px !important;
+    height: 18px !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+
+  /* =====================================================
+     SEARCH BOX
+     ===================================================== */
+
+  body.officer-reference-dashboard .officer-search-box {
+
+    position: relative !important;
+
+    display: block !important;
+
+    flex: 1 1 auto !important;
+
+    width: auto !important;
+    max-width: 280px !important;
+    min-width: 80px !important;
+
+    margin: 0 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+
+  body.officer-reference-dashboard .officer-search {
+
+    position: relative !important;
+
+    width: 100% !important;
+    height: 38px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    gap: 8px !important;
+
+    padding: 0 11px !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #d7e6ef !important;
+    border-radius: 10px !important;
+
+    box-shadow:
+      0 3px 10px rgba(13, 121, 174, 0.10) !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-search > i {
+
+    display: block !important;
+
+    flex: 0 0 auto !important;
+
+    color: #54748d !important;
+
+    font-size: 13px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-search input {
+
+    display: block !important;
+
+    flex: 1 1 auto !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    background: transparent !important;
+
+    box-shadow: none !important;
+    outline: none !important;
+
+    color: #19354f !important;
+
+    font-size: 12px !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+
+  /* =====================================================
+     RIGHT SIDE
+     bell + profile
+     ===================================================== */
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .nav-right {
+
+    position: static !important;
+
+    top: auto !important;
+    right: auto !important;
+
+    transform: none !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    flex: 0 0 auto !important;
+
+    height: auto !important;
+
+    gap: 5px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    z-index: 10 !important;
+  }
+
+
+  /* Notification bell */
+  body.officer-reference-dashboard .officer-bell,
+  body.officer-reference-dashboard .bell {
+
+    position: relative !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    width: 36px !important;
+    height: 36px !important;
+
+    min-width: 36px !important;
+
+    flex: 0 0 36px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    border-radius: 50% !important;
+
+    background: transparent !important;
+
+    color: #15293b !important;
+
+    cursor: pointer !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-bell:hover {
+
+    background: #edf6fb !important;
+  }
+
+
+  /* Prevent double bell icon */
+  body.officer-reference-dashboard
+  .officer-bell::before {
+
+    display: none !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-bell i {
+
+    display: block !important;
+
+    font-size: 17px !important;
+
+    color: #15293b !important;
+  }
+
+
+  /* Profile trigger */
+  body.officer-reference-dashboard
+  .officer-profile-trigger {
+
+    position: relative !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 38px !important;
+    height: 38px !important;
+
+    min-width: 38px !important;
+
+    flex: 0 0 38px !important;
+
+    margin: 0 !important;
+    padding: 2px !important;
+
+    border: 0 !important;
+
+    border-radius: 50% !important;
+
+    background: transparent !important;
+
+    cursor: pointer !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-profile-trigger-copy,
+  body.officer-reference-dashboard
+  .officer-profile-chevron {
+
+    display: none !important;
+  }
+
+
+  /* Profile image/avatar */
+  body.officer-reference-dashboard .avatar {
+
+    position: relative !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    width: 34px !important;
+    height: 34px !important;
+
+    min-width: 34px !important;
+
+    flex: 0 0 34px !important;
+
+    margin: 0 !important;
+
+    overflow: hidden !important;
+
+    border-radius: 50% !important;
+
+    box-shadow:
+      0 0 0 2px #ffffff,
+      0 2px 7px rgba(20, 55, 82, 0.18) !important;
+  }
+
+
+  body.officer-reference-dashboard .avatar img {
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: cover !important;
+
+    border-radius: 50% !important;
+  }
+}
+
+
+/* =========================================================
+   SMALL PHONE
+   ========================================================= */
+
+@media (max-width: 560px) {
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar {
+
+    height: 52px !important;
+    min-height: 52px !important;
+
+    padding: 6px !important;
+
+    gap: 5px !important;
+
+    border-radius: 12px !important;
+  }
+
+
+  body.officer-reference-dashboard .sidebar-toggle {
+
+    width: 36px !important;
+    height: 36px !important;
+
+    min-width: 36px !important;
+
+    flex-basis: 36px !important;
+  }
+
+
+  body.officer-reference-dashboard .officer-search-box {
+
+    max-width: none !important;
+  }
+
+
+  body.officer-reference-dashboard .officer-search {
+
+    height: 36px !important;
+
+    padding: 0 8px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-search input {
+
+    font-size: 11px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-bell {
+
+    display: grid !important;
+
+    width: 34px !important;
+    height: 34px !important;
+
+    min-width: 34px !important;
+
+    flex-basis: 34px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-profile-trigger {
+
+    width: 34px !important;
+    height: 34px !important;
+
+    min-width: 34px !important;
+
+    flex-basis: 34px !important;
+  }
+
+
+  body.officer-reference-dashboard .avatar {
+
+    width: 30px !important;
+    height: 30px !important;
+
+    min-width: 30px !important;
+  }
+}
+
+
+/* Very narrow phones */
+@media (max-width: 390px) {
+
+  body.officer-reference-dashboard
+  .officer-search input {
+
+    font-size: 10px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-search input::placeholder {
+
+    font-size: 10px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .officer-search {
+
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+  }
+}
