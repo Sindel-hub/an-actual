@@ -376,8 +376,24 @@ exports.getElectionContext = onCall(callableOptions(), async (request) => {
     serverNowMs: nowMs,
     registrationOpen: scheduleComplete && lifecycle === "Registration" && inWindow(election, "registrationStart", "registrationEnd", nowMs),
     reviewOpen: scheduleComplete && lifecycle === "Review" && inWindow(election, "applicationReviewStart", "applicationReviewEnd", nowMs),
-    candidateVisible: scheduleComplete && nowMs >= toMillis(election.candidatePublicationStart),
-    votingOpen: scheduleComplete && lifecycle === "Voting" && inWindow(election, "votingStart", "votingEnd", nowMs),
+    candidateVisible:
+  scheduleComplete &&
+  inWindow(
+    election,
+    "candidatePublicationStart",
+    "candidatePublicationEnd",
+    nowMs
+  ),
+    votingOpen:
+  scheduleComplete &&
+  election.candidateReviewComplete === true &&
+  lifecycle === "Voting" &&
+  inWindow(
+    election,
+    "votingStart",
+    "votingEnd",
+    nowMs
+  ),
     resultsVisible: scheduleComplete && election.resultsPublished === true && nowMs >= toMillis(election.resultPublicationStart),
     finalized: election.finalized === true,
     resultsPublished: election.resultsPublished === true,
