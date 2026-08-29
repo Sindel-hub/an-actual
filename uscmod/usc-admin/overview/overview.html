@@ -558,6 +558,144 @@
     }
 }
 
+    /* =========================================================
+   FINAL MAIN DASHBOARD SEARCH FIX
+   ========================================================= */
+
+@media (max-width: 820px) {
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .officer-search {
+    position: relative !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 40px !important;
+
+    padding: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+
+  /* Magnifying glass */
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .officer-search > .fa-magnifying-glass {
+
+    position: absolute !important;
+
+    top: 50% !important;
+    left: 13px !important;
+
+    transform: translateY(-50%) !important;
+
+    width: 18px !important;
+
+    margin: 0 !important;
+
+    font-size: 16px !important;
+
+    z-index: 3 !important;
+
+    pointer-events: none !important;
+  }
+
+
+  /* Search text */
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .officer-search
+  input#officerQuickSearch {
+
+    position: relative !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 40px !important;
+
+    margin: 0 !important;
+
+    /* THIS keeps text away from icon */
+    padding:
+      0
+      38px
+      0
+      42px !important;
+
+    border: 0 !important;
+
+    background: transparent !important;
+
+    line-height: normal !important;
+
+    z-index: 2 !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  #officerQuickSearch::placeholder {
+
+    color: #8596a4 !important;
+
+    opacity: 1 !important;
+  }
+
+
+  /* X clear button */
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .officer-search-clear {
+
+    position: absolute !important;
+
+    top: 50% !important;
+    right: 6px !important;
+
+    transform: translateY(-50%) !important;
+
+    z-index: 4 !important;
+  }
+}
+
+
+/* Smaller phones */
+@media (max-width: 560px) {
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .officer-search {
+    height: 36px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .officer-search
+  input#officerQuickSearch {
+
+    height: 36px !important;
+
+    padding-left: 39px !important;
+
+    font-size: 12px !important;
+  }
+
+
+  body.officer-reference-dashboard
+  .reference-dashboard-toolbar
+  .officer-search > .fa-magnifying-glass {
+
+    left: 12px !important;
+
+    font-size: 15px !important;
+  }
+}
+
 }
 </style>
   <script src="../../shared/app-config.js"></script>
