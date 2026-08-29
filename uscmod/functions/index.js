@@ -774,17 +774,37 @@ exports.saveElectionSchedule = onCall(callableOptions(), async (request) => {
     throw new HttpsError("failed-precondition", "Normal schedule editing is locked once candidate registration begins. An administrator must use the documented emergency schedule procedure with a reason.");
   }
   const next = {
-    electionId,
-    title,
+  electionId,
+  title,
+  ...schedule,
+
+  candidateReviewComplete:
+    before?.candidateReviewComplete === true,
+
+  finalized: false,
+  resultsPublished: false,
+  archived: false,
+
+  lifecycle: electionLifecycle({
+    ...before,
     ...schedule,
     finalized: false,
     resultsPublished: false,
-    archived: false,
-    lifecycle: electionLifecycle({ ...before, ...schedule, finalized: false, resultsPublished: false, archived: false }),
-    scheduleVersion: 4,
-    updatedAt: FieldValue.serverTimestamp(),
-    ...(beforeSnap.exists ? {} : { createdAt: FieldValue.serverTimestamp() })
-  };
+    archived: false
+  }),
+
+  scheduleVersion: 5,
+
+  updatedAt:
+    FieldValue.serverTimestamp(),
+
+  ...(beforeSnap.exists
+    ? {}
+    : {
+        createdAt:
+          FieldValue.serverTimestamp()
+      })
+};
   const batch = db.batch();
   batch.set(electionRef, next, { merge: true });
   batch.set(pointerRef, { electionId, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
@@ -1054,6 +1074,12 @@ exports.submitAnonymousBallot = onCall(callableOptions(), async (request) => {
     if (!userSnap.exists) throw new HttpsError("permission-denied", "Verified user profile not found.");
     const election = electionSnap.data();
     const nowMs = Date.now();
+    if (election.candidateReviewComplete !== true) {
+  throw new HttpsError(
+    "failed-precondition",
+    "Voting is blocked because candidate review is not complete. All candidate applications must receive a final approval or rejection decision before ballots can be submitted."
+  );
+}
     if (election.finalized === true || election.archived === true || electionLifecycle(election, nowMs) !== "Voting" || !inWindow(election, "votingStart", "votingEnd", nowMs)) {
       throw new HttpsError("failed-precondition", "Voting is not open according to server time.");
     }
