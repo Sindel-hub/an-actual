@@ -125,19 +125,35 @@ function toggleSidebar() {
 }
 
 function bindResponsiveSidebar() {
-  const { toggle, sidebar, overlay } = getSidebarElements();
+  const toggle = document.querySelector("[data-sidebar-toggle]");
+  const sidebar = document.querySelector(".sidebar");
+  const overlay = document.querySelector("[data-sidebar-overlay]");
 
-  if (!toggle || !sidebar || !overlay) return;
+  if (!toggle || !sidebar) {
+    console.warn("Sidebar toggle or sidebar was not found.");
+    return;
+  }
 
-  toggle.addEventListener("click", (event) => {
+  function handleToggle(event) {
     event.preventDefault();
     event.stopPropagation();
 
-    toggleSidebar();
-  });
+    if (sidebar.classList.contains("open")) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  }
 
-  overlay.addEventListener("click", closeSidebar);
+  /* Standard tap/click */
+  toggle.addEventListener("click", handleToggle);
 
+  /* Overlay closes sidebar */
+  if (overlay) {
+    overlay.addEventListener("click", closeSidebar);
+  }
+
+  /* Close after selecting a menu item on mobile */
   document.querySelectorAll(".sidebar .nav-btn").forEach((link) => {
     link.addEventListener("click", () => {
       if (isMobileViewport()) {
@@ -146,12 +162,14 @@ function bindResponsiveSidebar() {
     });
   });
 
+  /* Escape key */
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeSidebar();
     }
   });
 
+  /* Reset when returning to desktop */
   window.addEventListener("resize", () => {
     if (!isMobileViewport()) {
       closeSidebar();
