@@ -383,7 +383,14 @@ service cloud.firestore {
       }
 
       match /candidates/{candidateId} {
-        allow read: if isOfficerOrAdmin() || (signedIn() && candidatePublishedByServer(electionId));
+  allow read: if isOfficerOrAdmin()
+    || (
+      signedIn()
+      && (
+        candidatePublishedByServer(electionId)
+        || votingOpenByServer(electionId)
+      )
+    );
         allow create: if isOfficerOrAdmin()
           && request.time >= electionDoc(electionId).applicationReviewStart
           && request.time < electionDoc(electionId).applicationReviewEnd
