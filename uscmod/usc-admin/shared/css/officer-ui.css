@@ -1456,3 +1456,184 @@ input[readonly]:focus, textarea[readonly]:focus, .read-only-field:focus {
     padding-right: 7px !important;
   }
 }
+
+/* =====================================================
+   FINAL MOBILE TOOLBAR ALIGNMENT
+   Sidebar + Search + Bell + Profile same row
+   ===================================================== */
+
+@media (max-width: 820px) {
+
+    body.officer-reference-dashboard .reference-dashboard-toolbar {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+
+        height: 56px !important;
+        min-height: 56px !important;
+
+        padding: 7px 12px !important;
+    }
+
+
+    /* LEFT GROUP */
+    body.officer-reference-dashboard .reference-search-wrap {
+
+        display: flex !important;
+        align-items: center !important;
+
+        height: 100% !important;
+
+        gap: 8px !important;
+    }
+
+
+    body.officer-reference-dashboard .sidebar-toggle {
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        margin: 0 !important;
+
+        transform: translateY(0) !important;
+    }
+
+
+    body.officer-reference-dashboard .officer-search-box {
+
+        display: flex !important;
+        align-items: center !important;
+
+        height: 100% !important;
+    }
+
+
+    body.officer-reference-dashboard .officer-search {
+
+        height: 38px !important;
+
+        display: flex !important;
+        align-items: center !important;
+    }
+
+
+
+    /* RIGHT GROUP */
+    body.officer-reference-dashboard .nav-right {
+
+        position: static !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        height: 100% !important;
+
+        gap: 6px !important;
+
+        margin: 0 !important;
+
+        transform: none !important;
+    }
+
+
+
+    /* Bell */
+    body.officer-reference-dashboard .officer-bell,
+    body.officer-reference-dashboard .bell {
+
+        display: flex !important;
+
+        align-items: center !important;
+        justify-content: center !important;
+
+        width: 38px !important;
+        height: 38px !important;
+
+        margin: 0 !important;
+
+        transform: translateY(0) !important;
+    }
+
+
+    body.officer-reference-dashboard .officer-bell i {
+
+        font-size: 18px !important;
+
+        line-height: 1 !important;
+    }
+
+
+
+    /* Profile */
+    body.officer-reference-dashboard .officer-profile-trigger {
+
+        display: flex !important;
+
+        align-items: center !important;
+        justify-content: center !important;
+
+        width: 40px !important;
+        height: 40px !important;
+
+        margin: 0 !important;
+
+        padding: 2px !important;
+
+        transform: translateY(0) !important;
+    }
+
+
+    body.officer-reference-dashboard .avatar {
+
+        display: block !important;
+
+        width: 34px !important;
+        height: 34px !important;
+
+        margin: 0 !important;
+
+    }
+
+}
+
+
+
+/* Small phones */
+@media (max-width:560px){
+
+    body.officer-reference-dashboard .reference-dashboard-toolbar {
+
+        height:52px !important;
+        min-height:52px !important;
+
+        padding:6px 8px !important;
+    }
+
+
+    body.officer-reference-dashboard .officer-bell,
+    body.officer-reference-dashboard .bell {
+
+        width:34px !important;
+        height:34px !important;
+
+    }
+
+
+    body.officer-reference-dashboard .officer-profile-trigger {
+
+        width:36px !important;
+        height:36px !important;
+
+    }
+
+
+    body.officer-reference-dashboard .avatar {
+
+        width:30px !important;
+        height:30px !important;
+
+    }
+
+}
