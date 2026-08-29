@@ -26,18 +26,84 @@
     </div>
   </header>
 
-  <nav class="top-nav">
-    <div class="nav-left">
-      <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Open sidebar" aria-expanded="false"><span class="grid-icon"></span></button>
-      <div class="module-title-wrap"><h2>Organizational Chart</h2><span>Officer Portal</span></div>
-    </div>
-    <div class="nav-right">
-      <div class="bell"><i class="fa-regular fa-bell"></i></div>
-      <div class="avatar"></div>
-      <span data-admin-name>USC Officer</span>
-    </div>
-  </nav>
+  <nav class="top-nav officer-global-toolbar">
 
+    <!-- LEFT: sidebar + module search -->
+    <div class="nav-left officer-global-search-wrap">
+
+        <button
+            class="sidebar-toggle"
+            type="button"
+            data-sidebar-toggle
+            aria-label="Open sidebar"
+            aria-expanded="false"
+        >
+            <span class="grid-icon"></span>
+        </button>
+
+
+        <div class="officer-search-box" id="officerSearchBox">
+
+            <div class="officer-search">
+
+                <i
+                    class="fa-solid fa-magnifying-glass"
+                    aria-hidden="true"
+                ></i>
+
+                <input
+                    id="officerQuickSearch"
+                    type="search"
+                    aria-label="Search officer modules"
+                    placeholder="Search modules"
+                    autocomplete="off"
+                />
+
+                <button
+                    class="officer-search-clear"
+                    id="officerSearchClear"
+                    type="button"
+                    aria-label="Clear search"
+                    hidden
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+            </div>
+
+
+            <div
+                class="officer-search-results"
+                id="officerSearchResults"
+                role="listbox"
+                aria-label="Officer module search results"
+                hidden
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RIGHT: notifications + profile -->
+    <div class="nav-right">
+
+        <button
+            class="bell officer-bell"
+            type="button"
+            aria-label="Notifications"
+        >
+            <i class="fa-regular fa-bell"></i>
+        </button>
+
+        <div
+            class="avatar"
+            aria-label="Officer profile"
+        ></div>
+
+    </div>
+
+</nav>
   <div class="sidebar-overlay" data-sidebar-overlay></div>
   <main class="layout">
     <aside class="sidebar officer-reference-sidebar">
