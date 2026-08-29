@@ -1035,5 +1035,6 @@ document.addEventListener("DOMContentLoaded", () => {
   bindDataNavButtons();
 
   bindResponsiveSidebar();
-  bindNotificationBell();
+bindOfficerModuleSearch();
+bindNotificationBell();
 });
