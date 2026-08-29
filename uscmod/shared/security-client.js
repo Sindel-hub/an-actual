@@ -584,7 +584,12 @@ async function browserSaveElectionSchedule(data = {}, emergency = false) {
   const electionId = String(data.electionId || "").trim().toLowerCase();
   if (!/^[a-z0-9][a-z0-9-]{2,79}$/.test(electionId)) throw new Error("Use a permanent Election ID containing lowercase letters, numbers, and hyphens.");
   const schedule = normalizedSchedule(data.schedule || {});
-  const electionRef = doc(db, "elections", electionId);
+ const electionRef =
+  doc(
+    db,
+    "election_settings",
+    "current"
+  );
   const pointerRef = doc(db, "election_config", "current");
   const existing = await getDoc(electionRef);
   if (existing.exists() && (existing.data().finalized === true || existing.data().archived === true)) throw new Error("A finalized or archived election cannot be rescheduled.");
