@@ -394,3 +394,20 @@
         align-items: flex-start;
     }
 }
+
+/* Live preview image visibility */
+#announcementPreviewImage[hidden],
+#draftImagePreview[hidden] {
+    display: none !important;
+}
+
+#announcementPreviewImage:not([hidden]) {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+#draftImagePreview:not([hidden]) {
+    display: block !important;
+}
