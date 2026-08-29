@@ -270,4 +270,11 @@ function bindProfileDrawer(){
   refreshProfileDrawer();
 }
 
-renderToday();bindQuickSearch();bindProfileDrawer();bindComplaintSummary();bindOfficerSummary();bindVoteSummary();bindAnnouncements();bindEvents();bindElectionSettings();
+renderToday();
+bindProfileDrawer();
+bindComplaintSummary();
+bindOfficerSummary();
+bindVoteSummary();
+bindAnnouncements();
+bindEvents();
+bindElectionSettings();
