@@ -91,25 +91,57 @@ function formatAnnouncementDate(announcement) {
 }
 
 function setDraftPreviewImage(source) {
-    if (!announcementPreviewImage || !announcementPreviewImageWrap || !announcementPreviewPlaceholder) {
+    if (
+        !announcementPreviewImage ||
+        !announcementPreviewImageWrap ||
+        !announcementPreviewPlaceholder
+    ) {
         return;
     }
 
     if (source) {
+        /* Show selected image in Live Preview */
         announcementPreviewImage.src = source;
-        announcementPreviewImage.alt = safeText(announcementTitleInput?.value, "Announcement image");
+
+        announcementPreviewImage.alt = safeText(
+            announcementTitleInput?.value,
+            "Announcement image"
+        );
+
         announcementPreviewImage.hidden = false;
+
         announcementPreviewImageWrap.hidden = false;
+        announcementPreviewImageWrap.classList.remove("empty");
+
         announcementPreviewPlaceholder.hidden = true;
+
+        /* Also show the small form preview */
+        if (draftImagePreview) {
+            draftImagePreview.src = source;
+            draftImagePreview.hidden = false;
+        }
+
         return;
     }
 
+    /* No image selected */
     announcementPreviewImage.removeAttribute("src");
     announcementPreviewImage.hidden = true;
-    announcementPreviewImageWrap.hidden = true;
-    announcementPreviewPlaceholder.hidden = false;
-}
 
+    /*
+     * Keep the preview box visible,
+     * but display its placeholder.
+     */
+    announcementPreviewImageWrap.hidden = false;
+    announcementPreviewImageWrap.classList.add("empty");
+
+    announcementPreviewPlaceholder.hidden = false;
+
+    if (draftImagePreview) {
+        draftImagePreview.removeAttribute("src");
+        draftImagePreview.hidden = true;
+    }
+}
 function releaseDraftObjectUrl() {
     if (selectedImageObjectUrl) {
         URL.revokeObjectURL(selectedImageObjectUrl);
