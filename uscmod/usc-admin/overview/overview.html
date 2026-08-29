@@ -460,59 +460,72 @@
   }
 }
 
-  /* =========================================================
-   OFFICER DASHBOARD HEADER
-   Scroll normally with the page
-   ========================================================= */
-
-/* Override shared sticky header */
-body.officer-reference-dashboard .top-banner {
-    position: relative !important;
-
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-
-    z-index: 10 !important;
-}
-
-
-/* Override shared sticky toolbar */
-body.officer-reference-dashboard .top-nav,
-body.officer-reference-dashboard .reference-dashboard-toolbar {
-    position: relative !important;
-
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-
-    transform: none !important;
-
-    z-index: 20 !important;
-}
-
-
-/* =========================================================
-   MOBILE HEADER
+    /* =========================================================
+   FINAL OFFICER MOBILE HEADER FIX
+   Normal scrolling + remove old fixed-header spacing
    ========================================================= */
 
 @media (max-width: 820px) {
+
+    /* Remove space that was reserved for the old fixed header */
+    body.officer-reference-dashboard .app-shell {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+
+        width: 100% !important;
+        min-height: 0 !important;
+    }
+
+    /* Remove excessive outer top spacing */
+    body.officer-reference-dashboard .page {
+        padding-top: 0 !important;
+    }
+
+    /* Blue USC header scrolls normally */
+    body.officer-reference-dashboard .top-banner {
+        position: relative !important;
+
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+
+        width: 100% !important;
+
+        margin: 0 !important;
+
+        z-index: 10 !important;
+    }
+
+    /* White search toolbar also scrolls normally */
+    body.officer-reference-dashboard .top-nav,
+    body.officer-reference-dashboard
+    .reference-dashboard-toolbar {
+
+        position: relative !important;
+
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+
+        transform: none !important;
+
+        z-index: 20 !important;
+    }
 
     body.officer-reference-dashboard
     .reference-dashboard-toolbar {
 
         width: 100% !important;
 
-        margin: 0 0 10px !important;
-
-        /* Reserve space for bell + avatar */
-        padding: 7px 92px 7px 8px !important;
+        margin:
+            8px
+            0
+            10px !important;
     }
 
-
-    /* Bell + profile stay inside toolbar */
+    /* Bell + profile stay inside the toolbar */
     body.officer-reference-dashboard
     .reference-dashboard-toolbar > .nav-right {
 
@@ -522,34 +535,25 @@ body.officer-reference-dashboard .reference-dashboard-toolbar {
         right: 8px !important;
 
         transform: none !important;
-
-        display: flex !important;
-        align-items: center !important;
-
-        gap: 5px !important;
     }
 }
 
 
-/* Small phones */
+/* Smaller phones */
 @media (max-width: 560px) {
 
-    body.officer-reference-dashboard
-    .reference-dashboard-toolbar {
-
-        padding: 6px 82px 6px 6px !important;
+    body.officer-reference-dashboard .app-shell {
+        margin-top: 0 !important;
     }
-
 
     body.officer-reference-dashboard
     .reference-dashboard-toolbar > .nav-right {
 
         top: 7px !important;
         right: 5px !important;
-
-        gap: 2px !important;
     }
 }
+
 }
 </style>
   <script src="../../shared/app-config.js"></script>
