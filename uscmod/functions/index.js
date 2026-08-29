@@ -1012,6 +1012,12 @@ exports.reviewCandidateApplication = onCall(callableOptions({ secrets: [SUPABASE
       }
       tx.set(db.collection("audit_logs").doc(), auditData(request, `CANDIDACY_${decision.toUpperCase()}`, appRef.path, { status: app.status }, { status, candidateId: candidateId || null }));
     });
+
+    await syncCandidateReviewCompletion(
+  electionId,
+  request.auth.uid
+);
+    
     return { status, candidateId: candidateId || null };
   } catch (error) {
     if (publicPhoto.path) await removePublicFile(publicPhoto.path);
