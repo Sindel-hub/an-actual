@@ -295,6 +295,15 @@
     text-align: center;
 }
 
+/* Hide announcement modal until Open full post is clicked */
+.announcement-modal[hidden] {
+    display: none !important;
+}
+
+.modal-image[hidden] {
+    display: none !important;
+}
+
 .announcement-modal {
     position: fixed;
     inset: 0;
