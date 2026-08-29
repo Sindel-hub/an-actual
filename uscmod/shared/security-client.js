@@ -63,7 +63,13 @@ async function browserElectionContext() {
     return {
       electionId: "", title: "USC Election", lifecycle: "Draft", scheduleComplete: false,
       serverNowMs: Date.now(), registrationOpen: false, reviewOpen: false,
-      candidateVisible: false, votingOpen: false, resultsVisible: false,
+      candidateVisible: false,
+
+candidateReviewComplete: false,
+
+votingOpen: false,
+
+resultsVisible: false,
       finalized: false, resultsPublished: false, archived: false, eligibleVoterCount: 0
     };
   }
@@ -591,21 +597,37 @@ async function browserSaveElectionSchedule(data = {}, emergency = false) {
   const reason = String(data.reason || "").trim().slice(0,500);
   if (emergency && !reason) throw new Error("An emergency schedule reason is required.");
   const patch = {
-    ...schedule, title: String(data.title || existing.data?.()?.title || "USC General Election").trim().slice(0,120),
-    lifecycle: lifecycleFromSchedule({ ...(existing.exists() ? existing.data() : {}), ...schedule }, Date.now()),
-    finalized: existing.exists() ? existing.data().finalized === true : false,
-    resultsPublished: existing.exists() ? existing.data().resultsPublished === true : false,
-    archived: existing.exists() ? existing.data().archived === true : false,
-    updatedAt: serverTimestamp(), updatedByUid: user.uid, browserManaged: true
-  };
-  const batch = writeBatch(db);
-  batch.set(electionRef, patch, { merge: true });
-  batch.set(pointerRef, { electionId, updatedAt: serverTimestamp(), updatedByUid: user.uid }, { merge: true });
-  batch.set(doc(collection(db, "audit_logs")), { actorUid: user.uid, actorEmail: user.email || "", action: emergency ? "ELECTION_EMERGENCY_SCHEDULE_UPDATE" : "ELECTION_SCHEDULE_SAVE", target: `elections/${electionId}`, details: emergency ? { reason } : {}, source: "browser-election-runtime", createdAt: serverTimestamp() });
-  await batch.commit();
-  return { electionId, lifecycle: patch.lifecycle, emergencyChangeRecorded: emergency };
-}
+  ...schedule,
 
+  candidateReviewComplete:
+    existing.exists()
+      ? existing.data()
+          .candidateReviewComplete === true
+      : false,
+
+  candidateReviewCompletedAt:
+    existing.exists()
+      ? existing.data()
+          .candidateReviewCompletedAt || null
+      : null,
+
+  candidateReviewCompletedByUid:
+    existing.exists()
+      ? String(
+          existing.data()
+            .candidateReviewCompletedByUid ||
+          ""
+        )
+      : "",
+
+  title:
+    String(
+      data.title ||
+      existing.data?.()?.title ||
+      "USC General Election"
+    )
+      .trim()
+      .slice(0, 120),
 async function browserStartRosterImport(data = {}) {
   const { user } = await requireBrowserRole(["admin"]);
   const electionId = String(data.electionId || (await browserElectionContext()).electionId || "").trim();
@@ -682,27 +704,298 @@ async function browserSubmitCandidateApplication(data = {}) {
   return { applicationId:user.uid, status:"Under Review", electionId:context.electionId };
 }
 
-async function browserReviewCandidate(data = {}) {
-  const { user } = await requireBrowserRole(["officer","admin"]);
-  const context = await browserElectionContext();
-  if (!context.reviewOpen) throw new Error("Application review is not open.");
-  const applicantUid = String(data.applicantUid||"").trim();
-  const decision = String(data.decision||"").toLowerCase();
-  if (!applicantUid || !["approve","reject"].includes(decision)) throw new Error("Choose Approve or Reject.");
-  const appRef = doc(db,"elections",context.electionId,"applications",applicantUid);
-  const appSnap = await getDoc(appRef);
-  if (!appSnap.exists()) throw new Error("Candidate application not found.");
-  if (String(appSnap.data().status||"").toLowerCase() !== "under review") throw new Error("This application already has a final decision.");
-  const app = appSnap.data();
-  const status = decision === "approve" ? "Approved" : "Rejected";
-  const candidateId = decision === "approve" ? randomId("cand") : "";
-  const batch=writeBatch(db);
-  batch.update(appRef,{ status, candidateId: candidateId || "", reviewNote:String(data.reviewNote||"").slice(0,500), reviewedByUid:user.uid, reviewedAt:serverTimestamp(), updatedAt:serverTimestamp() });
-  if (candidateId) batch.set(doc(db,"elections",context.electionId,"candidates",candidateId), { candidateId, fullName:app.fullName||"", position:app.position||"", department:app.department||"", college:app.college||"", program:app.program||"", partylist:app.partylist||"", platform:app.platform||"", campaignPhotoUrl:app.campaignPhotoPath||"", approved:true, published:true, approvedAt:serverTimestamp() });
-  await batch.commit();
-  return { status, candidateId: candidateId || null };
+async function syncBrowserCandidateReviewCompletion(
+  electionId,
+  actorUid = ""
+) {
+  if (!electionId) {
+    return false;
+  }
+
+
+  const applicationsRef =
+    collection(
+      db,
+      "elections",
+      electionId,
+      "applications"
+    );
+
+
+  /*
+   * Check whether at least one application exists.
+   */
+  const applications =
+    await getDocs(
+      applicationsRef
+    );
+
+
+  /*
+   * Check whether any application still
+   * requires a final decision.
+   */
+  const pending =
+    await getDocs(
+      query(
+        applicationsRef,
+        where(
+          "status",
+          "==",
+          "Under Review"
+        )
+      )
+    );
+
+
+  /*
+   * Voting becomes eligible only when:
+   *
+   * - at least one candidate application exists
+   * - ZERO applications remain Under Review
+   */
+  const complete =
+    !applications.empty &&
+    pending.empty;
+
+
+  await updateDoc(
+    doc(
+      db,
+      "elections",
+      electionId
+    ),
+    {
+      candidateReviewComplete:
+        complete,
+
+      candidateReviewCompletedAt:
+        complete
+          ? serverTimestamp()
+          : null,
+
+      candidateReviewCompletedByUid:
+        complete
+          ? actorUid
+          : "",
+
+      updatedAt:
+        serverTimestamp()
+    }
+  );
+
+
+  return complete;
 }
 
+async function browserReviewCandidate(data = {}) {
+  const { user } =
+    await requireBrowserRole([
+      "officer",
+      "admin"
+    ]);
+
+
+  const context =
+    await browserElectionContext();
+
+
+  if (!context.reviewOpen) {
+    throw new Error(
+      "Application review is not open."
+    );
+  }
+
+
+  const applicantUid =
+    String(
+      data.applicantUid || ""
+    ).trim();
+
+
+  const decision =
+    String(
+      data.decision || ""
+    ).toLowerCase();
+
+
+  if (
+    !applicantUid ||
+    ![
+      "approve",
+      "reject"
+    ].includes(decision)
+  ) {
+    throw new Error(
+      "Choose Approve or Reject."
+    );
+  }
+
+
+  const appRef =
+    doc(
+      db,
+      "elections",
+      context.electionId,
+      "applications",
+      applicantUid
+    );
+
+
+  const appSnap =
+    await getDoc(appRef);
+
+
+  if (!appSnap.exists()) {
+    throw new Error(
+      "Candidate application not found."
+    );
+  }
+
+
+  if (
+    String(
+      appSnap.data().status || ""
+    ).toLowerCase() !==
+    "under review"
+  ) {
+    throw new Error(
+      "This application already has a final decision."
+    );
+  }
+
+
+  const app =
+    appSnap.data();
+
+
+  const status =
+    decision === "approve"
+      ? "Approved"
+      : "Rejected";
+
+
+  const candidateId =
+    decision === "approve"
+      ? randomId("cand")
+      : "";
+
+
+  const batch =
+    writeBatch(db);
+
+
+  batch.update(
+    appRef,
+    {
+      status,
+
+      candidateId:
+        candidateId || "",
+
+      reviewNote:
+        String(
+          data.reviewNote || ""
+        ).slice(
+          0,
+          500
+        ),
+
+      reviewedByUid:
+        user.uid,
+
+      reviewedAt:
+        serverTimestamp(),
+
+      updatedAt:
+        serverTimestamp()
+    }
+  );
+
+
+  /*
+   * Approved application becomes
+   * an official candidate.
+   */
+  if (candidateId) {
+
+    batch.set(
+      doc(
+        db,
+        "elections",
+        context.electionId,
+        "candidates",
+        candidateId
+      ),
+      {
+        candidateId,
+
+        fullName:
+          app.fullName || "",
+
+        position:
+          app.position || "",
+
+        department:
+          app.department || "",
+
+        college:
+          app.college || "",
+
+        program:
+          app.program || "",
+
+        partylist:
+          app.partylist || "",
+
+        platform:
+          app.platform || "",
+
+        campaignPhotoUrl:
+          app.campaignPhotoPath || "",
+
+        approved:
+          true,
+
+        published:
+          true,
+
+        approvedAt:
+          serverTimestamp()
+      }
+    );
+  }
+
+
+  /*
+   * Save the actual review decision first.
+   */
+  await batch.commit();
+
+
+  /*
+   * IMPORTANT:
+   *
+   * After every approval/rejection,
+   * check whether ALL applications now
+   * have a final decision.
+   */
+  const candidateReviewComplete =
+    await syncBrowserCandidateReviewCompletion(
+      context.electionId,
+      user.uid
+    );
+
+
+  return {
+    status,
+
+    candidateId:
+      candidateId || null,
+
+    candidateReviewComplete
+  };
+}
 async function browserSubmitBallot(data = {}) {
   const { user, profile } = await requireBrowserRole(["student"]);
   if (profile.isVerifiedStudent !== true) throw new Error("Your account is not eligible to vote.");
