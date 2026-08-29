@@ -302,8 +302,8 @@ service cloud.firestore {
 
 // Voting depends on completed review scheduling,
 // NOT Candidate Publication closing.
-&& request.resource.data.applicationReviewEnd <= request.resource.data.votingStart
-&& request.resource.data.votingStart < request.resource.data.votingEnd
+        && request.resource.data.applicationReviewEnd <= request.resource.data.votingStart
+        && request.resource.data.votingStart < request.resource.data.votingEnd
         && request.resource.data.votingEnd <= request.resource.data.resultPublicationStart
         && request.resource.data.resultPublicationStart < request.resource.data.resultPublicationEnd;
       allow update: if isOfficerOrAdmin()
