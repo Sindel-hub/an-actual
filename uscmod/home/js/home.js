@@ -1,5 +1,8 @@
 import { db } from "../../firebase/firebase-config.js";
 import {
+  hydrateMediaImages
+} from "../../shared/security-client.js";
+import {
   collection,
   limit,
   onSnapshot,
@@ -107,25 +110,96 @@ function setArrowState() {
 }
 
 function buildSlide(announcement, role = "active") {
-  const title = safeText(announcement.title, "USC Announcement");
-  const imageUrl = safeText(announcement.imageUrl);
+  const title = safeText(
+    announcement.title,
+    "USC Announcement"
+  );
 
-  const content = imageUrl
-    ? `<div class="announcement-poster"><img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(title)}"></div>`
-    : `
-      <div class="announcement-fallback">
-        <div class="announcement-fallback-seals">
-          <img src="assets/SSUlogo.webp" alt="" onerror="this.style.display='none'">
-          <img src="assets/USClogo.webp" alt="" onerror="this.style.display='none'">
-        </div>
-        <div class="fallback-label">ANNOUNCEMENT</div>
-        <h3>${escapeHtml(truncateText(title, 72))}</h3>
-        <p>${escapeHtml(truncateText(announcement.content, 150))}</p>
+  const imageUrl = safeText(
+    announcement.imageUrl
+  );
+
+  let content = "";
+
+  if (imageUrl) {
+
+    /*
+     * Browser-stored media uses firestore-media://
+     * which is NOT a browser-native image URL.
+     *
+     * Keep it in data-media-ref so hydrateMediaImages()
+     * can reconstruct the actual image.
+     */
+    const imageMarkup =
+      imageUrl.startsWith("firestore-media://")
+        ? `
+          <img
+            data-media-ref="${escapeHtml(imageUrl)}"
+            alt="${escapeHtml(title)}"
+          >
+        `
+        : `
+          <img
+            src="${escapeHtml(imageUrl)}"
+            alt="${escapeHtml(title)}"
+          >
+        `;
+
+    content = `
+      <div class="announcement-poster">
+        ${imageMarkup}
       </div>
     `;
 
+  } else {
+
+    content = `
+      <div class="announcement-fallback">
+
+        <div class="announcement-fallback-seals">
+
+          <img
+            src="assets/SSUlogo.webp"
+            alt=""
+            onerror="this.style.display='none'"
+          >
+
+          <img
+            src="assets/USClogo.webp"
+            alt=""
+            onerror="this.style.display='none'"
+          >
+
+        </div>
+
+        <div class="fallback-label">
+          ANNOUNCEMENT
+        </div>
+
+        <h3>
+          ${escapeHtml(
+            truncateText(title, 72)
+          )}
+        </h3>
+
+        <p>
+          ${escapeHtml(
+            truncateText(
+              announcement.content,
+              150
+            )
+          )}
+        </p>
+
+      </div>
+    `;
+  }
+
   return `
-    <article class="preview-slide ${role}" aria-label="${escapeHtml(title)}">
+    <article
+      class="preview-slide ${role}"
+      aria-label="${escapeHtml(title)}"
+    >
       ${content}
     </article>
   `;
@@ -147,6 +221,23 @@ function buildFallbackSlide() {
   `;
 }
 
+async function hydrateAnnouncementSlides() {
+  if (!dom.slidesHost) {
+    return;
+  }
+
+  try {
+    await hydrateMediaImages(
+      dom.slidesHost
+    );
+  } catch (error) {
+    console.warn(
+      "Unable to load landing announcement image:",
+      error
+    );
+  }
+}
+
 function renderDots() {
   if (!dom.dotsHost) return;
   const dotCount = previewAnnouncements.length > 0 ? previewAnnouncements.length : 1;
@@ -156,26 +247,88 @@ function renderDots() {
 }
 
 function renderCarousel() {
-  if (!dom.slidesHost) return;
-  if (!previewAnnouncements.length) {
-    dom.slidesHost.innerHTML = buildFallbackSlide();
-    renderDots();
-    setArrowState();
+  if (!dom.slidesHost) {
     return;
   }
 
-  const total = previewAnnouncements.length;
-  const activeIndex = previewCurrentSlide;
-  const prevIndex = (activeIndex - 1 + total) % total;
-  const nextIndex = (activeIndex + 1) % total;
+
+  /* No announcements */
+  if (!previewAnnouncements.length) {
+
+    dom.slidesHost.innerHTML =
+      buildFallbackSlide();
+
+    renderDots();
+
+    setArrowState();
+
+    hydrateAnnouncementSlides();
+
+    return;
+  }
+
+
+  const total =
+    previewAnnouncements.length;
+
+  const activeIndex =
+    previewCurrentSlide;
+
+  const prevIndex =
+    (activeIndex - 1 + total) % total;
+
+  const nextIndex =
+    (activeIndex + 1) % total;
+
   const parts = [];
 
-  if (total > 1) parts.push(buildSlide(previewAnnouncements[prevIndex], "prev"));
-  parts.push(buildSlide(previewAnnouncements[activeIndex], "active"));
-  if (total > 1) parts.push(buildSlide(previewAnnouncements[nextIndex], "next"));
 
-  dom.slidesHost.innerHTML = parts.join("");
+  if (total > 1) {
+
+    parts.push(
+      buildSlide(
+        previewAnnouncements[prevIndex],
+        "prev"
+      )
+    );
+
+  }
+
+
+  parts.push(
+    buildSlide(
+      previewAnnouncements[activeIndex],
+      "active"
+    )
+  );
+
+
+  if (total > 1) {
+
+    parts.push(
+      buildSlide(
+        previewAnnouncements[nextIndex],
+        "next"
+      )
+    );
+
+  }
+
+
+  dom.slidesHost.innerHTML =
+    parts.join("");
+
+
+  /*
+   * IMPORTANT:
+   * Convert firestore-media:// references
+   * into actual Blob URLs after each render.
+   */
+  hydrateAnnouncementSlides();
+
+
   renderDots();
+
   setArrowState();
 }
 
