@@ -461,3 +461,264 @@ body.officer-app-shell svg {
     transform: translateX(0) !important;
   }
 }
+
+/* =========================================================
+   SHARED OFFICER MODULE SEARCH
+   ========================================================= */
+
+body.officer-app-shell .officer-global-toolbar {
+    overflow: visible !important;
+}
+
+
+body.officer-app-shell .officer-global-search-wrap {
+    position: relative !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    flex: 1 1 auto !important;
+
+    width: auto !important;
+    max-width: 520px !important;
+    min-width: 0 !important;
+
+    gap: 8px !important;
+
+    overflow: visible !important;
+}
+
+
+body.officer-app-shell .officer-search-box {
+    position: relative !important;
+
+    flex: 1 1 auto !important;
+
+    width: 100% !important;
+    max-width: 430px !important;
+    min-width: 0 !important;
+
+    overflow: visible !important;
+}
+
+
+body.officer-app-shell .officer-search {
+    width: 100% !important;
+    height: 40px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    gap: 10px !important;
+
+    padding: 0 13px !important;
+
+    background: #ffffff !important;
+
+    border: 1px solid #dce6ef !important;
+    border-radius: 12px !important;
+
+    box-shadow:
+        0 4px 14px
+        rgba(13, 121, 174, .10) !important;
+
+    color: #15324f !important;
+}
+
+
+body.officer-app-shell .officer-search > i {
+    flex: 0 0 auto !important;
+
+    color: #25465f !important;
+
+    font-size: 17px !important;
+}
+
+
+body.officer-app-shell .officer-search input {
+    flex: 1 1 auto !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    background: transparent !important;
+
+    box-shadow: none !important;
+
+    outline: none !important;
+
+    color: #19354f !important;
+
+    font-size: 13px !important;
+}
+
+
+body.officer-app-shell .officer-search input:focus {
+    border: 0 !important;
+
+    box-shadow: none !important;
+
+    outline: none !important;
+}
+
+
+body.officer-app-shell
+.officer-search input::placeholder {
+    color: #8797a5 !important;
+
+    opacity: 1 !important;
+}
+
+
+body.officer-app-shell .officer-search-clear {
+    flex: 0 0 28px !important;
+
+    width: 28px !important;
+    height: 28px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-radius: 50% !important;
+
+    background: transparent !important;
+
+    color: #65798c !important;
+
+    cursor: pointer !important;
+}
+
+
+body.officer-app-shell
+.officer-search-clear[hidden] {
+    display: none !important;
+}
+
+
+/* Search dropdown */
+
+body.officer-app-shell .officer-search-results {
+    position: absolute !important;
+
+    z-index: 6000 !important;
+
+    top: calc(100% + 7px) !important;
+
+    left: 0 !important;
+    right: 0 !important;
+
+    width: 100% !important;
+
+    max-height: 340px !important;
+
+    overflow-y: auto !important;
+
+    padding: 6px !important;
+
+    border: 1px solid #dce6ef !important;
+    border-radius: 13px !important;
+
+    background: #ffffff !important;
+
+    box-shadow:
+        0 16px 38px
+        rgba(12, 39, 67, .16) !important;
+}
+
+
+body.officer-app-shell
+.officer-search-results[hidden] {
+    display: none !important;
+}
+
+
+body.officer-app-shell .officer-search-result {
+    width: 100% !important;
+    min-height: 52px !important;
+
+    display: grid !important;
+
+    grid-template-columns:
+        32px minmax(0, 1fr) 18px !important;
+
+    align-items: center !important;
+
+    gap: 9px !important;
+
+    padding: 8px 10px !important;
+
+    border: 0 !important;
+    border-radius: 9px !important;
+
+    background: transparent !important;
+
+    color: #244b70 !important;
+
+    text-align: left !important;
+
+    cursor: pointer !important;
+}
+
+
+body.officer-app-shell .officer-search-result:hover,
+body.officer-app-shell .officer-search-result.is-active {
+    background: #edf7fb !important;
+}
+
+
+body.officer-app-shell
+.officer-search-result > i:first-child {
+    color: #168fc6 !important;
+
+    font-size: 15px !important;
+}
+
+
+body.officer-app-shell
+.officer-search-result span {
+    min-width: 0 !important;
+}
+
+
+body.officer-app-shell
+.officer-search-result strong {
+    display: block !important;
+
+    color: #214f7d !important;
+
+    font-size: 11px !important;
+}
+
+
+body.officer-app-shell
+.officer-search-result small {
+    display: block !important;
+
+    margin-top: 2px !important;
+
+    color: #7b8b99 !important;
+
+    font-size: 9px !important;
+}
+
+
+body.officer-app-shell .officer-search-empty {
+    padding: 18px 12px !important;
+
+    color: #788999 !important;
+
+    font-size: 11px !important;
+
+    text-align: center !important;
+}
