@@ -911,6 +911,49 @@ async function removePublicFile(path) {
   try { await supabaseAdmin().storage.from(PUBLIC_BUCKET).remove([path]); } catch (error) { console.warn("Unable to remove orphaned public media:", error); }
 }
 
+async function syncCandidateReviewCompletion(electionId, actorUid = "") {
+  const pending = await db
+    .collection(`elections/${electionId}/applications`)
+    .where("status", "==", "Under Review")
+    .limit(1)
+    .get();
+
+  const applications = await db
+    .collection(`elections/${electionId}/applications`)
+    .limit(1)
+    .get();
+
+  /*
+   * There must be at least one application,
+   * and no application may remain Under Review.
+   */
+  const complete =
+    !applications.empty &&
+    pending.empty;
+
+  await db.doc(`elections/${electionId}`).set(
+    {
+      candidateReviewComplete: complete,
+
+      candidateReviewCompletedAt:
+        complete
+          ? FieldValue.serverTimestamp()
+          : null,
+
+      candidateReviewCompletedByUid:
+        complete
+          ? actorUid
+          : "",
+
+      updatedAt:
+        FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+
+  return complete;
+}
+
 exports.reviewCandidateApplication = onCall(callableOptions({ secrets: [SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY] }), async (request) => {
   await requireActiveRole(request, ["officer", "admin"]);
   requireRecentAuth(request);
