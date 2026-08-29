@@ -1094,3 +1094,89 @@ body.student-app-shell .student-main .event-copy p {
   body.student-app-shell #dashboardHome .welcome-message h1 { font-size: 22px; }
   body.student-app-shell #dashboardHome .section-label-row h2 { font-size: 15px; }
 }
+
+/* =========================================================
+   STUDENT ANNOUNCEMENT MODAL CLOSE BUTTON FIX
+   Keep X separate from the image
+   ========================================================= */
+
+body.student-app-shell .announcement-modal-dialog {
+    /* reserve a clean white area above the image */
+    padding: 58px 26px 26px !important;
+}
+
+body.student-app-shell
+.announcement-modal-dialog .modal-close {
+
+    position: absolute !important;
+
+    top: 12px !important;
+    right: 16px !important;
+
+    width: 36px !important;
+    height: 36px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-radius: 50% !important;
+
+    background: #eaf2f7 !important;
+    color: #163b68 !important;
+
+    font-size: 24px !important;
+    line-height: 1 !important;
+
+    cursor: pointer !important;
+
+    z-index: 10 !important;
+}
+
+body.student-app-shell
+.announcement-modal-dialog .modal-close:hover {
+    background: #dcebf4 !important;
+}
+
+body.student-app-shell
+.announcement-modal-dialog .modal-image {
+
+    width: 100% !important;
+
+    margin:
+        0
+        0
+        18px !important;
+
+    border-radius: 14px !important;
+}
+
+
+/* Mobile */
+@media (max-width: 560px) {
+
+    body.student-app-shell
+    .announcement-modal-dialog {
+
+        padding:
+            54px
+            14px
+            16px !important;
+    }
+
+
+    body.student-app-shell
+    .announcement-modal-dialog .modal-close {
+
+        top: 10px !important;
+        right: 12px !important;
+
+        width: 34px !important;
+        height: 34px !important;
+
+        font-size: 22px !important;
+    }
+}
