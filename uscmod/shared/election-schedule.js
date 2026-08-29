@@ -76,34 +76,123 @@ export function hasCompleteElectionSchedule(settings = {}) {
 
 export function validateElectionSchedule(settings = {}) {
   const windows = phaseWindows(settings);
-  const missing = windows.filter((phase) => !phase.start || !phase.end);
+
+  const missing = windows.filter(
+    (phase) => !phase.start || !phase.end
+  );
+
   if (missing.length) {
     return {
       valid: false,
-      message: `Please set both opening and closing date/time for ${missing.map((phase) => phase.label).join(", ")}.`
+      message:
+        `Please set both opening and closing date/time for ${missing
+          .map((phase) => phase.label)
+          .join(", ")}.`
     };
   }
 
+  /*
+   * Every phase only needs a valid individual
+   * opening and closing time.
+   */
   for (const phase of windows) {
-    if (phase.end < phase.start) {
-      return { valid: false, message: `${phase.label} closing time cannot be earlier than its opening time.` };
-    }
-  }
-
-  for (let index = 1; index < windows.length; index += 1) {
-    const previous = windows[index - 1];
-    const current = windows[index];
-    if (current.start < previous.end) {
+    if (phase.end <= phase.start) {
       return {
         valid: false,
-        message: `${current.label} must open on or after ${previous.label} closes.`
+        message:
+          `${phase.label} must close after it opens.`
       };
     }
   }
 
-  return { valid: true, message: "" };
-}
+  const getWindow = (id) =>
+    windows.find((phase) => phase.id === id);
 
+  const registration =
+    getWindow("registration");
+
+  const review =
+    getWindow("review");
+
+  const publication =
+    getWindow("publication");
+
+  const voting =
+    getWindow("voting");
+
+  const results =
+    getWindow("results");
+
+
+  /*
+   * Registration must finish before
+   * Application Review begins.
+   */
+  if (review.start < registration.end) {
+    return {
+      valid: false,
+      message:
+        "Application Review cannot begin before Candidate Registration closes."
+    };
+  }
+
+
+  /*
+   * Candidate Publication may begin once
+   * the scheduled Application Review period ends.
+   */
+  if (publication.start < review.end) {
+    return {
+      valid: false,
+      message:
+        "Candidate Publication cannot begin before Application Review closes."
+    };
+  }
+
+
+  /*
+   * IMPORTANT:
+   *
+   * Voting depends on Application Review,
+   * NOT Candidate Publication closing.
+   *
+   * Candidate Publication and Voting may overlap.
+   */
+  if (voting.start < review.end) {
+    return {
+      valid: false,
+      message:
+        "Voting cannot begin before Application Review closes. Candidate Publication may overlap with Voting."
+    };
+  }
+
+
+  /*
+   * There is deliberately NO check like:
+   *
+   * voting.start >= publication.end
+   *
+   * Publication and Voting are independent.
+   */
+
+
+  /*
+   * Results may only begin after Voting closes.
+   */
+  if (results.start < voting.end) {
+    return {
+      valid: false,
+      message:
+        "Result Publication cannot begin before Voting closes."
+    };
+  }
+
+
+  return {
+    valid: true,
+    message: ""
+  };
+}
 function legacyState(settings = {}, now = new Date()) {
   // Legacy/incomplete election data must fail closed. Device time is display-only;
   // sensitive writes are authorized by Cloud Functions / Firestore request.time.
