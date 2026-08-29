@@ -1,5 +1,57 @@
 const OFFICER_OVERVIEW_PATH = "../overview/overview.html";
 const ADMIN_DASHBOARD_PATH = "../admin-dashboard/admin-dashboard.html";
+const OFFICER_MODULES = [
+  {
+    name: "Dashboard",
+    detail: "Officer overview and live summaries",
+    href: "../overview/overview.html",
+    icon: "fa-table-columns",
+    keywords: "dashboard overview home summary"
+  },
+
+  {
+    name: "Bulletin Board Center",
+    detail: "Create and manage USC announcements",
+    href: "../announcements/announcements.html",
+    icon: "fa-note-sticky",
+    keywords: "bulletin announcement announcements post notice"
+  },
+
+  {
+    name: "Election Management",
+    detail: "Election schedule, candidates and voting",
+    href: "../elections/elections.html",
+    icon: "fa-rectangle-list",
+    keywords:
+      "election elections voting vote candidate candidates schedule results"
+  },
+
+  {
+    name: "Events",
+    detail: "Create and manage USC events",
+    href: "../events/events.html",
+    icon: "fa-calendar",
+    keywords: "event events calendar activity activities"
+  },
+
+  {
+    name: "Organizational Chart",
+    detail: "View the USC council structure",
+    href: "../organizational-chart/organizational-chart.html",
+    icon: "fa-users",
+    keywords:
+      "organization organizational chart officers council structure"
+  },
+
+  {
+    name: "Complaints Management",
+    detail: "Review and manage student complaints",
+    href: "../complaints/complaints.html",
+    icon: "fa-message",
+    keywords:
+      "complaint complaints case cases concern concerns"
+  }
+];
 const MOBILE_BREAKPOINT = 820;
 
 function normalizePath(pathname) {
