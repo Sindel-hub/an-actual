@@ -640,6 +640,389 @@ function bindNotificationBell() {
 }
 
 /* =========================================================
+   SHARED OFFICER MODULE SEARCH
+   ========================================================= */
+
+function bindOfficerModuleSearch() {
+
+  const input =
+    document.getElementById("officerQuickSearch");
+
+  const box =
+    document.getElementById("officerSearchBox");
+
+  const results =
+    document.getElementById("officerSearchResults");
+
+  const clearBtn =
+    document.getElementById("officerSearchClear");
+
+
+  if (!input || !box || !results) {
+    return;
+  }
+
+
+  /*
+   * Prevent duplicate binding.
+   * This is useful while Dashboard still has
+   * its old overview search code.
+   */
+  if (input.dataset.moduleSearchBound === "true") {
+    return;
+  }
+
+  input.dataset.moduleSearchBound = "true";
+
+
+  let visible = [];
+
+  let activeIndex = -1;
+
+
+  function closeResults() {
+
+    results.hidden = true;
+
+    results.innerHTML = "";
+
+    visible = [];
+
+    activeIndex = -1;
+
+    input.removeAttribute(
+      "aria-activedescendant"
+    );
+  }
+
+
+  function setActive(index) {
+
+    const buttons = [
+      ...results.querySelectorAll(
+        ".officer-search-result"
+      )
+    ];
+
+
+    if (!buttons.length) {
+
+      activeIndex = -1;
+
+      return;
+    }
+
+
+    activeIndex =
+      Math.max(
+        0,
+        Math.min(
+          index,
+          buttons.length - 1
+        )
+      );
+
+
+    buttons.forEach(
+      (button, i) => {
+
+        button.classList.toggle(
+          "is-active",
+          i === activeIndex
+        );
+
+      }
+    );
+
+
+    const active =
+      buttons[activeIndex];
+
+
+    if (active) {
+
+      input.setAttribute(
+        "aria-activedescendant",
+        active.id
+      );
+
+      active.scrollIntoView({
+        block: "nearest"
+      });
+
+    }
+  }
+
+
+  function renderResults() {
+
+    const query =
+      input.value
+        .trim()
+        .toLowerCase();
+
+
+    if (clearBtn) {
+
+      clearBtn.hidden =
+        query.length === 0;
+
+    }
+
+
+    if (!query) {
+
+      closeResults();
+
+      return;
+    }
+
+
+    visible =
+      OFFICER_MODULES.filter(
+        (item) => {
+
+          const text = `
+            ${item.name}
+            ${item.detail}
+            ${item.keywords}
+          `.toLowerCase();
+
+
+          return text.includes(query);
+
+        }
+      );
+
+
+    results.hidden = false;
+
+    activeIndex = -1;
+
+
+    if (!visible.length) {
+
+      results.innerHTML = `
+        <div class="officer-search-empty">
+          No matching officer module found.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    results.innerHTML =
+      visible
+        .map(
+          (item, index) => `
+
+            <button
+              class="officer-search-result"
+              id="officerSearchResult${index}"
+              type="button"
+              role="option"
+              data-search-index="${index}"
+            >
+
+              <i
+                class="fa-solid ${item.icon}"
+                aria-hidden="true"
+              ></i>
+
+
+              <span>
+
+                <strong>
+                  ${item.name}
+                </strong>
+
+                <small>
+                  ${item.detail}
+                </small>
+
+              </span>
+
+
+              <i
+                class="fa-solid fa-chevron-right"
+                aria-hidden="true"
+              ></i>
+
+            </button>
+
+          `
+        )
+        .join("");
+  }
+
+
+  input.addEventListener(
+    "input",
+    renderResults
+  );
+
+
+  input.addEventListener(
+    "focus",
+    () => {
+
+      if (input.value.trim()) {
+
+        renderResults();
+
+      }
+
+    }
+  );
+
+
+  input.addEventListener(
+    "keydown",
+    (event) => {
+
+      if (event.key === "Escape") {
+
+        closeResults();
+
+        input.blur();
+
+        return;
+      }
+
+
+      if (event.key === "ArrowDown") {
+
+        if (results.hidden) {
+
+          renderResults();
+
+        }
+
+
+        if (visible.length) {
+
+          event.preventDefault();
+
+          setActive(
+            activeIndex + 1
+          );
+
+        }
+
+        return;
+      }
+
+
+      if (event.key === "ArrowUp") {
+
+        if (visible.length) {
+
+          event.preventDefault();
+
+          setActive(
+            activeIndex <= 0
+              ? visible.length - 1
+              : activeIndex - 1
+          );
+
+        }
+
+        return;
+      }
+
+
+      if (event.key !== "Enter") {
+        return;
+      }
+
+
+      const target =
+        visible[
+          activeIndex >= 0
+            ? activeIndex
+            : 0
+        ];
+
+
+      if (target) {
+
+        event.preventDefault();
+
+        window.location.href =
+          target.href;
+
+      }
+
+    }
+  );
+
+
+  results.addEventListener(
+    "click",
+    (event) => {
+
+      const button =
+        event.target.closest(
+          "[data-search-index]"
+        );
+
+
+      if (!button) {
+        return;
+      }
+
+
+      const item =
+        visible[
+          Number(
+            button.dataset.searchIndex
+          )
+        ];
+
+
+      if (item) {
+
+        window.location.href =
+          item.href;
+
+      }
+
+    }
+  );
+
+
+  clearBtn?.addEventListener(
+    "click",
+    () => {
+
+      input.value = "";
+
+      clearBtn.hidden = true;
+
+      closeResults();
+
+      input.focus();
+
+    }
+  );
+
+
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+
+      if (!box.contains(event.target)) {
+
+        closeResults();
+
+      }
+
+    }
+  );
+}
+
+/* =========================================================
    INITIALIZATION
    ========================================================= */
 
