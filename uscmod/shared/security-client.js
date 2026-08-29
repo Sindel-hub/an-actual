@@ -361,7 +361,16 @@ function timestampFromInput(value) {
 }
 
 function normalizedSchedule(raw = {}) {
-  const out = Object.fromEntries(ELECTION_SCHEDULE_FIELDS.map((field) => [field, timestampFromInput(raw[field])]));
+  const out = Object.fromEntries(
+    ELECTION_SCHEDULE_FIELDS.map((field) => [
+      field,
+      timestampFromInput(raw[field])
+    ])
+  );
+
+  const ms = (field) => out[field].toMillis();
+
+  /* Each phase must have a valid individual window. */
   const pairs = [
     ["registrationStart", "registrationEnd", "Candidate Registration"],
     ["applicationReviewStart", "applicationReviewEnd", "Application Review"],
@@ -369,12 +378,55 @@ function normalizedSchedule(raw = {}) {
     ["votingStart", "votingEnd", "Voting"],
     ["resultPublicationStart", "resultPublicationEnd", "Result Publication"]
   ];
+
   for (const [start, end, label] of pairs) {
-    if (out[end].toMillis() <= out[start].toMillis()) throw new Error(`${label} must close after it opens.`);
+    if (ms(end) <= ms(start)) {
+      throw new Error(`${label} must close after it opens.`);
+    }
   }
-  for (let i = 1; i < pairs.length; i += 1) {
-    if (out[pairs[i][0]].toMillis() < out[pairs[i - 1][1]].toMillis()) throw new Error(`${pairs[i][2]} cannot begin before ${pairs[i - 1][2]} closes.`);
+
+  /*
+   * Registration must finish before formal application review begins.
+   */
+  if (ms("applicationReviewStart") < ms("registrationEnd")) {
+    throw new Error(
+      "Application Review cannot begin before Candidate Registration closes."
+    );
   }
+
+  /*
+   * Candidate Publication begins after the scheduled review phase.
+   *
+   * IMPORTANT:
+   * Candidate Publication END has absolutely no dependency
+   * on Voting START.
+   */
+  if (ms("candidatePublicationStart") < ms("applicationReviewEnd")) {
+    throw new Error(
+      "Candidate Publication cannot begin before Application Review closes."
+    );
+  }
+
+  /*
+   * Voting only needs the review phase to have completed.
+   *
+   * Candidate Publication may still be active while Voting is active.
+   */
+  if (ms("votingStart") < ms("applicationReviewEnd")) {
+    throw new Error(
+      "Voting cannot begin before Application Review closes. Candidate Publication may overlap with Voting."
+    );
+  }
+
+  /*
+   * Results remain dependent on voting having closed.
+   */
+  if (ms("resultPublicationStart") < ms("votingEnd")) {
+    throw new Error(
+      "Result Publication cannot begin before Voting closes."
+    );
+  }
+
   return out;
 }
 
