@@ -625,14 +625,17 @@ async function browserSaveElectionSchedule(data = {}, emergency = false) {
         )
       : "",
 
-  title:
+    title:
     String(
       data.title ||
-      existing.data?.()?.title ||
+      existing.data()?.title ||
       "USC General Election"
     )
-      .trim()
-      .slice(0, 120),
+    .trim()
+    .slice(0, 120)
+};
+
+
 async function browserStartRosterImport(data = {}) {
   const { user } = await requireBrowserRole(["admin"]);
   const electionId = String(data.electionId || (await browserElectionContext()).electionId || "").trim();
@@ -1082,7 +1085,7 @@ async function callBrowserMode(name, data) {
   if (name === "activateVerifiedStudent") return { ok: true, browserMode: true };
   if (name === "saveElectionSchedule") return browserSaveElectionSchedule(data, false);
   if (name === "emergencyUpdateElectionSchedule") return browserSaveElectionSchedule(data, true);
-  if (name === "startVoterRosterImport") return browserStartRosterImport(data);
+    if (name === "startVoterRosterImport") return browserStartRosterImport(data);
   if (name === "importVoterMasterlist") return browserImportRoster(data);
   if (name === "finalizeVoterRosterImport") return browserFinalizeRosterImport(data);
   if (name === "submitCandidateApplication") return browserSubmitCandidateApplication(data);
