@@ -32,6 +32,17 @@
     word-break: break-word !important;
 }
 
+/* Fix Latest Publish card on small screens */
+.stat-card {
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+
+#latestPublish {
+    display: block !important;
+    max-width: 100% !important;
+}
+
 .upload-box {
     display: flex;
     align-items: center;
