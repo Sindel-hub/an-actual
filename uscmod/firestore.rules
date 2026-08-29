@@ -54,12 +54,18 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/elections/$(electionId));
     }
     function votingOpenByServer(electionId) {
-      return electionExists(electionId)
-        && electionDoc(electionId).finalized != true
-        && electionDoc(electionId).archived != true
-        && request.time >= electionDoc(electionId).votingStart
-        && request.time < electionDoc(electionId).votingEnd;
-    }
+  return electionExists(electionId)
+
+    && electionDoc(electionId).finalized != true
+    && electionDoc(electionId).archived != true
+
+    // All candidacy applications must have a final decision.
+    && electionDoc(electionId).candidateReviewComplete == true
+
+    // Voting follows its own independent schedule.
+    && request.time >= electionDoc(electionId).votingStart
+    && request.time < electionDoc(electionId).votingEnd;
+}
     function candidatePublishedByServer(electionId) {
       return electionExists(electionId)
         && request.time >= electionDoc(electionId).candidatePublicationStart;
