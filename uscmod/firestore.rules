@@ -298,9 +298,12 @@ service cloud.firestore {
         && request.resource.data.registrationEnd <= request.resource.data.applicationReviewStart
         && request.resource.data.applicationReviewStart < request.resource.data.applicationReviewEnd
         && request.resource.data.applicationReviewEnd <= request.resource.data.candidatePublicationStart
-        && request.resource.data.candidatePublicationStart < request.resource.data.candidatePublicationEnd
-        && request.resource.data.candidatePublicationEnd <= request.resource.data.votingStart
-        && request.resource.data.votingStart < request.resource.data.votingEnd
+&& request.resource.data.candidatePublicationStart < request.resource.data.candidatePublicationEnd
+
+// Voting depends on completed review scheduling,
+// NOT Candidate Publication closing.
+&& request.resource.data.applicationReviewEnd <= request.resource.data.votingStart
+&& request.resource.data.votingStart < request.resource.data.votingEnd
         && request.resource.data.votingEnd <= request.resource.data.resultPublicationStart
         && request.resource.data.resultPublicationStart < request.resource.data.resultPublicationEnd;
       allow update: if isOfficerOrAdmin()
