@@ -67,9 +67,14 @@ service cloud.firestore {
     && request.time < electionDoc(electionId).votingEnd;
 }
     function candidatePublishedByServer(electionId) {
-      return electionExists(electionId)
-        && request.time >= electionDoc(electionId).candidatePublicationStart;
-    }
+  return electionExists(electionId)
+
+    && request.time >=
+      electionDoc(electionId).candidatePublicationStart
+
+    && request.time <
+      electionDoc(electionId).candidatePublicationEnd;
+}
 
     function complaintRatePath() {
       return /databases/$(database)/documents/complaint_rate_limits/$(uid());
