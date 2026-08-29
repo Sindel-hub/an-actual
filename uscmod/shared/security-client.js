@@ -707,6 +707,11 @@ async function browserSubmitBallot(data = {}) {
   const { user, profile } = await requireBrowserRole(["student"]);
   if (profile.isVerifiedStudent !== true) throw new Error("Your account is not eligible to vote.");
   const context = await browserElectionContext();
+  if (context.candidateReviewComplete !== true) {
+  throw new Error(
+    "Voting is blocked because candidate review is not complete. All candidate applications must receive a final approval or rejection decision before voting can begin."
+  );
+}
   if (!context.votingOpen || context.electionId !== String(data.electionId||context.electionId)) throw new Error("Voting is not open.");
   const selections = data.selections && typeof data.selections === "object" ? data.selections : {};
   if (!ELECTION_POSITIONS.every((p)=>typeof selections[p] === "string" && selections[p])) throw new Error("Select one candidate for every ballot position.");
