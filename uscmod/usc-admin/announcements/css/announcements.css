@@ -24,12 +24,12 @@
 
 .stat-value-sm {
     font-size: 16px !important;
-    line-height: 1.25 !important;
+    line-height: 1.2 !important;
     font-weight: 800 !important;
 
     white-space: normal !important;
     overflow-wrap: anywhere !important;
-    word-break: normal !important;
+    word-break: break-word !important;
 }
 
 .upload-box {
