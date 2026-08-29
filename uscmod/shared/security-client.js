@@ -80,29 +80,70 @@ async function browserElectionContext() {
   const scheduleComplete = fields.every((f) => toMillis(e[f]) > 0);
   const lifecycle = scheduleComplete ? lifecycleFromSchedule(e, now) : "Draft";
   const out = {
-    electionId,
-    title: e.title || "USC Election",
-    lifecycle,
-    scheduleComplete,
-    serverNowMs: now,
-    registrationOpen: scheduleComplete && lifecycle === "Registration" && now >= toMillis(e.registrationStart) && now < toMillis(e.registrationEnd),
-    reviewOpen: scheduleComplete && lifecycle === "Review" && now >= toMillis(e.applicationReviewStart) && now < toMillis(e.applicationReviewEnd),
-    candidateVisible:
-  scheduleComplete &&
-  now >= toMillis(e.candidatePublicationStart) &&
-  now < toMillis(e.candidatePublicationEnd),
-    votingOpen:
-  scheduleComplete &&
-  e.candidateReviewComplete === true &&
-  lifecycle === "Voting" &&
-  now >= toMillis(e.votingStart) &&
-  now < toMillis(e.votingEnd),
-    resultsVisible: scheduleComplete && e.resultsPublished === true && now >= toMillis(e.resultPublicationStart),
-    finalized: e.finalized === true,
-    resultsPublished: e.resultsPublished === true,
-    archived: e.archived === true,
-    eligibleVoterCount: Number(e.eligibleVoterCount || 0)
-  };
+  electionId,
+
+  title:
+    e.title || "USC Election",
+
+  lifecycle,
+
+  scheduleComplete,
+
+  serverNowMs:
+    now,
+
+
+  registrationOpen:
+    scheduleComplete &&
+    lifecycle === "Registration" &&
+    now >= toMillis(e.registrationStart) &&
+    now < toMillis(e.registrationEnd),
+
+
+  reviewOpen:
+    scheduleComplete &&
+    lifecycle === "Review" &&
+    now >= toMillis(e.applicationReviewStart) &&
+    now < toMillis(e.applicationReviewEnd),
+
+
+  candidateVisible:
+    scheduleComplete &&
+    now >= toMillis(e.candidatePublicationStart) &&
+    now < toMillis(e.candidatePublicationEnd),
+
+
+  /* ADD THIS HERE */
+  candidateReviewComplete:
+    e.candidateReviewComplete === true,
+
+
+  votingOpen:
+    scheduleComplete &&
+    e.candidateReviewComplete === true &&
+    lifecycle === "Voting" &&
+    now >= toMillis(e.votingStart) &&
+    now < toMillis(e.votingEnd),
+
+
+  resultsVisible:
+    scheduleComplete &&
+    e.resultsPublished === true &&
+    now >= toMillis(e.resultPublicationStart),
+
+
+  finalized:
+    e.finalized === true,
+
+  resultsPublished:
+    e.resultsPublished === true,
+
+  archived:
+    e.archived === true,
+
+  eligibleVoterCount:
+    Number(e.eligibleVoterCount || 0)
+};
   fields.forEach((f) => { out[f] = toMillis(e[f]) || null; });
   return out;
 }
