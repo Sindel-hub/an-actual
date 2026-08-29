@@ -562,6 +562,10 @@ exports.provisionSchoolAccounts = onCall(callableOptions({ timeoutSeconds: 540, 
       null,
       { studentId: row.studentId, institutionalEmail: row.email, voterEligible: row.eligible === true }
     ));
+    await syncCandidateReviewCompletion(
+  electionId,
+  request.auth.uid
+);
     await batch.commit();
 
     if (issuedPassword) credentials.push({
@@ -948,7 +952,6 @@ async function syncCandidateReviewCompletion(electionId, actorUid = "") {
    * and no application may remain Under Review.
    */
   const complete =
-    !applications.empty &&
     pending.empty;
 
   await db.doc(`elections/${electionId}`).set(
