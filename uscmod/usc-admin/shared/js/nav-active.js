@@ -164,67 +164,111 @@ function bindResponsiveSidebar() {
    ========================================================= */
 
 function installNotificationStyles() {
-  if (document.getElementById("officer-notification-styles")) return;
+  if (document.getElementById("officer-notification-styles")) {
+    return;
+  }
 
   const style = document.createElement("style");
 
   style.id = "officer-notification-styles";
 
   style.textContent = `
+    /* =====================================================
+       OFFICER NOTIFICATION BELL
+       Shared across all officer modules
+       ===================================================== */
+
     .nav-right {
       position: relative;
     }
 
+
     .bell {
+      position: relative;
+
       cursor: pointer !important;
+
       width: 38px;
       height: 38px;
+
       display: grid !important;
       place-items: center;
+
+      border: 0;
       border-radius: 50%;
+
+      background: transparent;
+
       transition:
         background .15s ease,
         transform .15s ease;
+
       user-select: none;
     }
 
+
     .bell:hover {
-      background: #edf5fb;
+      background: #edf5fb !important;
     }
+
 
     .bell:active {
       transform: scale(.95);
     }
+
 
     .bell:focus-visible {
       outline: 3px solid rgba(23, 183, 232, .22);
       outline-offset: 2px;
     }
 
+
+    /* =====================================================
+       NOTIFICATION PANEL
+       ===================================================== */
+
     .officer-notification-panel {
       position: absolute;
+
       z-index: 5000;
-      top: calc(100% + 10px);
+
+      top: calc(100% + 8px);
       right: 0;
+      left: auto;
 
       width: min(340px, calc(100vw - 24px));
+      max-width: calc(100vw - 24px);
+      min-width: 260px;
+
+      height: auto;
+      max-height: 70vh;
+
+      overflow-x: hidden;
+      overflow-y: auto;
+
+      box-sizing: border-box;
 
       border: 1px solid #dce6ef;
       border-radius: 14px;
 
-      background: white;
+      background: #ffffff;
 
       box-shadow:
         0 16px 40px rgba(12, 39, 67, .18);
-
-      overflow: hidden;
     }
+
 
     .officer-notification-panel[hidden] {
       display: none !important;
     }
 
+
+    /* =====================================================
+       PANEL HEADER
+       ===================================================== */
+
     .officer-notification-header {
+      width: 100%;
       min-height: 52px;
 
       padding: 12px 14px;
@@ -232,6 +276,7 @@ function installNotificationStyles() {
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 12px;
 
       border-bottom: 1px solid #e8eff5;
@@ -239,12 +284,19 @@ function installNotificationStyles() {
       background: #f7fbfd;
     }
 
+
     .officer-notification-header strong {
       color: #174c9d;
+
       font-size: 14px;
+
+      white-space: nowrap;
     }
 
+
     .officer-notification-close {
+      flex: 0 0 30px;
+
       width: 30px;
       height: 30px;
 
@@ -257,6 +309,7 @@ function installNotificationStyles() {
       border-radius: 8px;
 
       background: transparent;
+
       color: #50687e;
 
       cursor: pointer;
@@ -265,46 +318,115 @@ function installNotificationStyles() {
       line-height: 1;
     }
 
+
     .officer-notification-close:hover {
       background: #eaf4f9;
     }
 
+
+    /* =====================================================
+       CONTENT
+       ===================================================== */
+
     .officer-notification-content {
-      padding: 24px 18px;
+      width: 100%;
+
+      padding: 22px 18px;
 
       text-align: center;
 
       color: #65798c;
 
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.55;
+
+      white-space: normal;
+      word-break: normal;
+      overflow-wrap: normal;
     }
 
-    .officer-notification-icon {
-      font-size: 26px;
-      margin-bottom: 8px;
-    }
 
     .officer-notification-content strong {
       display: block;
 
-      margin-bottom: 4px;
+      margin-bottom: 5px;
 
       color: #274e73;
 
-      font-size: 13px;
+      font-size: 14px;
+      line-height: 1.3;
+
+      white-space: normal;
+      word-break: normal;
     }
 
-    @media (max-width: 560px) {
+
+    .officer-notification-icon {
+      margin-bottom: 10px;
+
+      font-size: 28px;
+    }
+
+
+    /* =====================================================
+       TABLETS / PHONES
+       ===================================================== */
+
+    @media (max-width: 820px) {
+
       .officer-notification-panel {
-        position: fixed;
+        position: absolute !important;
 
-        top: 116px;
-        left: 8px;
-        right: 8px;
+        top: calc(100% + 8px) !important;
 
-        width: auto;
+        right: 0 !important;
+        left: auto !important;
+
+        width: min(330px, calc(100vw - 20px)) !important;
+        max-width: calc(100vw - 20px) !important;
+        min-width: 250px !important;
+
+        max-height: 65vh !important;
       }
+
+    }
+
+
+    @media (max-width: 560px) {
+
+      .officer-notification-panel {
+        /*
+         * IMPORTANT:
+         * Keep this ABSOLUTE.
+         * The old code used position: fixed here,
+         * which caused the broken mobile notification UI.
+         */
+        position: absolute !important;
+
+        top: calc(100% + 8px) !important;
+
+        right: 0 !important;
+        left: auto !important;
+
+        width: min(310px, calc(100vw - 16px)) !important;
+        max-width: calc(100vw - 16px) !important;
+        min-width: 240px !important;
+
+        max-height: 65vh !important;
+      }
+
+    }
+
+
+    @media (max-width: 360px) {
+
+      .officer-notification-panel {
+        width: min(290px, calc(100vw - 12px)) !important;
+        max-width: calc(100vw - 12px) !important;
+
+        min-width: 220px !important;
+      }
+
     }
   `;
 
