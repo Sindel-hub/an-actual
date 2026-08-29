@@ -39,6 +39,12 @@ let candidates = [];
 let turnout = { ballotsCast: 0, eligibleVoters: 0 };
 let trustedClaims = {};
 
+let scheduleFormDirty = false;
+
+function markScheduleDirty() {
+  scheduleFormDirty = true;
+}
+
 function clean(v) { return String(v ?? "").trim(); }
 function esc(v) { return clean(v).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]); }
 function asLocalInput(ms) {
@@ -112,20 +118,85 @@ async function loadData() {
   if (turnoutSnap?.exists?.()) turnout = turnoutSnap.data();
 }
 
-function fillSchedule() {
-  if (els.electionTitleInput) els.electionTitleInput.value = context?.title || "USC General Election";
-  const idInput = $("electionIdInput");
-  if (idInput) idInput.value = electionId || `usc-${new Date().getFullYear()}-general`;
-  for (const [field, input] of Object.entries(scheduleInputs)) if (input) input.value = asLocalInput(context?.[field]);
-  if (els.electionStatusInput) els.electionStatusInput.value = context?.lifecycle || "Not configured";
-  if (els.electionStatusTitle) els.electionStatusTitle.textContent = context?.title || "USC Election";
-  if (els.activePhaseBadge) els.activePhaseBadge.textContent = context?.lifecycle || "Not configured";
-  if ($("secureLifecycleBadge")) $("secureLifecycleBadge").textContent = context?.lifecycle || "Not configured";
-  if ($("secureLifecycleDescription")) $("secureLifecycleDescription").textContent = lifecycleDescription();
-  if (els.candidateReviewPhaseBadge) {
-    els.candidateReviewPhaseBadge.textContent = context?.reviewOpen ? "Review open · server verified" : "Review locked";
-    els.candidateReviewPhaseBadge.classList.toggle("is-active", context?.reviewOpen === true);
+function fillSchedule(force = false) {
+
+  /*
+   * IMPORTANT:
+   * Do not overwrite dates the officer is currently editing.
+   *
+   * The dashboard refreshes automatically every 30 seconds.
+   * Without this check, refreshAll() replaces unsaved input
+   * values with the old Firebase schedule.
+   */
+  if (scheduleFormDirty && !force) {
+    return;
   }
+
+  if (els.electionTitleInput) {
+    els.electionTitleInput.value =
+      context?.title || "USC General Election";
+  }
+
+  const idInput = $("electionIdInput");
+
+  if (idInput) {
+    idInput.value =
+      electionId ||
+      `usc-${new Date().getFullYear()}-general`;
+  }
+
+  for (const [field, input] of Object.entries(scheduleInputs)) {
+
+    if (!input) {
+      continue;
+    }
+
+    input.value = asLocalInput(context?.[field]);
+  }
+
+  if (els.electionStatusInput) {
+    els.electionStatusInput.value =
+      context?.lifecycle || "Not configured";
+  }
+
+  if (els.electionStatusTitle) {
+    els.electionStatusTitle.textContent =
+      context?.title || "USC Election";
+  }
+
+  if (els.activePhaseBadge) {
+    els.activePhaseBadge.textContent =
+      context?.lifecycle || "Not configured";
+  }
+
+  if ($("secureLifecycleBadge")) {
+    $("secureLifecycleBadge").textContent =
+      context?.lifecycle || "Not configured";
+  }
+
+  if ($("secureLifecycleDescription")) {
+    $("secureLifecycleDescription").textContent =
+      lifecycleDescription();
+  }
+
+  if (els.candidateReviewPhaseBadge) {
+
+    els.candidateReviewPhaseBadge.textContent =
+      context?.reviewOpen
+        ? "Review open · server verified"
+        : "Review locked";
+
+    els.candidateReviewPhaseBadge.classList.toggle(
+      "is-active",
+      context?.reviewOpen === true
+    );
+  }
+
+  /*
+   * We only reach this point when the server schedule is
+   * intentionally allowed to populate the form.
+   */
+  scheduleFormDirty = false;
 }
 
 function renderStats() {
@@ -188,8 +259,19 @@ async function saveSchedule() {
     const id = clean($("electionIdInput")?.value).toLowerCase();
     const result = await callSecure("saveElectionSchedule", { electionId: id, title: clean(els.electionTitleInput?.value) || "USC General Election", schedule: schedulePayload() });
     electionId = result.electionId;
-    msg(`Election ${result.electionId} saved. Lifecycle: ${result.lifecycle}.`, "success");
-    await refreshAll();
+
+msg(
+  `Election ${result.electionId} saved. Lifecycle: ${result.lifecycle}.`,
+  "success"
+);
+
+/*
+ * It is safe to reload Firebase values now because
+ * the officer intentionally saved the form.
+ */
+scheduleFormDirty = false;
+
+await refreshAll(true);
   } catch (error) { msg(error.message || "Unable to save schedule.", "error"); }
   finally { els.saveElectionSettingsBtn.disabled = Boolean(context && context.lifecycle !== "Draft"); }
 }
@@ -338,23 +420,117 @@ function exportSummary() {
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`${electionId || "usc-election"}-turnout-summary.json`; a.click(); URL.revokeObjectURL(a.href);
 }
 
-async function refreshAll() {
+async function refreshAll(forceSchedule = false) {
+
   await loadContext();
   await loadData();
+
   const masterlistCard = $("masterlistImportCard");
-  if (masterlistCard) masterlistCard.hidden = trustedClaims.role !== "admin";
-  const emergencyControls = $("emergencyScheduleControls");
-  if (emergencyControls) emergencyControls.hidden = trustedClaims.role !== "admin" || !context || context.lifecycle === "Draft" || ["Canvassing","Results Published","Archived"].includes(context.lifecycle);
-  fillSchedule(); renderStats(); renderApplications();
-  if (els.saveElectionSettingsBtn) els.saveElectionSettingsBtn.disabled = Boolean(context && context.lifecycle !== "Draft");
-  const finalize = $("finalizeElectionBtn"), publish=$("publishResultsBtn"), archive=$("archiveElectionBtn");
-  const canCanvass = trustedClaims.role === "admin" || trustedClaims.canvasser === true;
-  if (finalize) finalize.disabled = !canCanvass || !context || !["Voting Closed","Canvassing"].includes(context.lifecycle);
-  if (publish) publish.disabled = !canCanvass || context?.lifecycle !== "Canvassing";
-  if (archive) archive.disabled = trustedClaims.role !== "admin" || context?.lifecycle !== "Results Published";
+
+  if (masterlistCard) {
+    masterlistCard.hidden =
+      trustedClaims.role !== "admin";
+  }
+
+  const emergencyControls =
+    $("emergencyScheduleControls");
+
+  if (emergencyControls) {
+
+    emergencyControls.hidden =
+      trustedClaims.role !== "admin" ||
+      !context ||
+      context.lifecycle === "Draft" ||
+      [
+        "Canvassing",
+        "Results Published",
+        "Archived"
+      ].includes(context.lifecycle);
+  }
+
+
+  /*
+   * Refresh the schedule from Firebase only when the officer
+   * hasn't started editing, unless explicitly forced.
+   */
+  fillSchedule(forceSchedule);
+
+
+  renderStats();
+  renderApplications();
+
+
+  if (els.saveElectionSettingsBtn) {
+
+    els.saveElectionSettingsBtn.disabled =
+      Boolean(
+        context &&
+        context.lifecycle !== "Draft"
+      );
+  }
+
+
+  const finalize = $("finalizeElectionBtn");
+  const publish = $("publishResultsBtn");
+  const archive = $("archiveElectionBtn");
+
+  const canCanvass =
+    trustedClaims.role === "admin" ||
+    trustedClaims.canvasser === true;
+
+
+  if (finalize) {
+
+    finalize.disabled =
+      !canCanvass ||
+      !context ||
+      ![
+        "Voting Closed",
+        "Canvassing"
+      ].includes(context.lifecycle);
+  }
+
+
+  if (publish) {
+
+    publish.disabled =
+      !canCanvass ||
+      context?.lifecycle !== "Canvassing";
+  }
+
+
+  if (archive) {
+
+    archive.disabled =
+      trustedClaims.role !== "admin" ||
+      context?.lifecycle !== "Results Published";
+  }
 }
 
 installHardeningPanels();
+/* =========================================================
+   PROTECT UNSAVED ELECTION SCHEDULE
+   ========================================================= */
+
+[
+  els.electionTitleInput,
+  $("electionIdInput"),
+  ...Object.values(scheduleInputs)
+]
+.filter(Boolean)
+.forEach((input) => {
+
+  input.addEventListener(
+    "input",
+    markScheduleDirty
+  );
+
+  input.addEventListener(
+    "change",
+    markScheduleDirty
+  );
+
+});
 {
   const tokenClaims = (await auth.currentUser?.getIdTokenResult(true))?.claims || {};
   const profileSnap = auth.currentUser ? await getDoc(doc(db, "users", auth.currentUser.uid)).catch(() => null) : null;
