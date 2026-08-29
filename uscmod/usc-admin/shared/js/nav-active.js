@@ -643,6 +643,10 @@ function bindNotificationBell() {
    SHARED OFFICER MODULE SEARCH
    ========================================================= */
 
+/* =========================================================
+   SHARED OFFICER MODULE SEARCH
+   ========================================================= */
+
 function bindOfficerModuleSearch() {
 
   const input =
@@ -663,21 +667,15 @@ function bindOfficerModuleSearch() {
   }
 
 
-  /*
-   * Prevent duplicate binding.
-   * This is useful while Dashboard still has
-   * its old overview search code.
-   */
   if (input.dataset.moduleSearchBound === "true") {
     return;
   }
 
+
   input.dataset.moduleSearchBound = "true";
 
 
-  let visible = [];
-
-  let activeIndex = -1;
+  let visibleModules = [];
 
 
   function closeResults() {
@@ -686,71 +684,17 @@ function bindOfficerModuleSearch() {
 
     results.innerHTML = "";
 
-    visible = [];
-
-    activeIndex = -1;
-
-    input.removeAttribute(
-      "aria-activedescendant"
-    );
+    visibleModules = [];
   }
 
 
-  function setActive(index) {
+  function openModule(module) {
 
-    const buttons = [
-      ...results.querySelectorAll(
-        ".officer-search-result"
-      )
-    ];
-
-
-    if (!buttons.length) {
-
-      activeIndex = -1;
-
+    if (!module?.href) {
       return;
     }
 
-
-    activeIndex =
-      Math.max(
-        0,
-        Math.min(
-          index,
-          buttons.length - 1
-        )
-      );
-
-
-    buttons.forEach(
-      (button, i) => {
-
-        button.classList.toggle(
-          "is-active",
-          i === activeIndex
-        );
-
-      }
-    );
-
-
-    const active =
-      buttons[activeIndex];
-
-
-    if (active) {
-
-      input.setAttribute(
-        "aria-activedescendant",
-        active.id
-      );
-
-      active.scrollIntoView({
-        block: "nearest"
-      });
-
-    }
+    window.location.href = module.href;
   }
 
 
@@ -763,44 +707,38 @@ function bindOfficerModuleSearch() {
 
 
     if (clearBtn) {
-
-      clearBtn.hidden =
-        query.length === 0;
-
+      clearBtn.hidden = !query;
     }
 
 
-    if (!query) {
+    /*
+     * Empty search = show every module.
+     */
+    visibleModules =
+      query
+        ? OFFICER_MODULES.filter(
+            (module) => {
 
-      closeResults();
-
-      return;
-    }
-
-
-    visible =
-      OFFICER_MODULES.filter(
-        (item) => {
-
-          const text = `
-            ${item.name}
-            ${item.detail}
-            ${item.keywords}
-          `.toLowerCase();
+              const searchableText = [
+                module.name,
+                module.detail,
+                module.keywords
+              ]
+                .join(" ")
+                .toLowerCase();
 
 
-          return text.includes(query);
+              return searchableText.includes(query);
 
-        }
-      );
+            }
+          )
+        : [...OFFICER_MODULES];
 
 
     results.hidden = false;
 
-    activeIndex = -1;
 
-
-    if (!visible.length) {
+    if (!visibleModules.length) {
 
       results.innerHTML = `
         <div class="officer-search-empty">
@@ -813,20 +751,18 @@ function bindOfficerModuleSearch() {
 
 
     results.innerHTML =
-      visible
+      visibleModules
         .map(
-          (item, index) => `
+          (module, index) => `
 
             <button
               class="officer-search-result"
-              id="officerSearchResult${index}"
               type="button"
-              role="option"
               data-search-index="${index}"
             >
 
               <i
-                class="fa-solid ${item.icon}"
+                class="fa-solid ${module.icon}"
                 aria-hidden="true"
               ></i>
 
@@ -834,11 +770,11 @@ function bindOfficerModuleSearch() {
               <span>
 
                 <strong>
-                  ${item.name}
+                  ${module.name}
                 </strong>
 
                 <small>
-                  ${item.detail}
+                  ${module.detail}
                 </small>
 
               </span>
@@ -857,26 +793,49 @@ function bindOfficerModuleSearch() {
   }
 
 
+  /*
+   * Clicking search container focuses input.
+   */
+  box.addEventListener(
+    "click",
+    (event) => {
+
+      if (
+        event.target.closest(
+          ".officer-search-clear"
+        )
+      ) {
+        return;
+      }
+
+
+      input.focus();
+
+    }
+  );
+
+
+  /*
+   * Tapping search opens module list.
+   */
+  input.addEventListener(
+    "focus",
+    renderResults
+  );
+
+
+  /*
+   * Search while typing.
+   */
   input.addEventListener(
     "input",
     renderResults
   );
 
 
-  input.addEventListener(
-    "focus",
-    () => {
-
-      if (input.value.trim()) {
-
-        renderResults();
-
-      }
-
-    }
-  );
-
-
+  /*
+   * Enter opens first matching result.
+   */
   input.addEventListener(
     "keydown",
     (event) => {
@@ -891,66 +850,16 @@ function bindOfficerModuleSearch() {
       }
 
 
-      if (event.key === "ArrowDown") {
-
-        if (results.hidden) {
-
-          renderResults();
-
-        }
-
-
-        if (visible.length) {
-
-          event.preventDefault();
-
-          setActive(
-            activeIndex + 1
-          );
-
-        }
-
-        return;
-      }
-
-
-      if (event.key === "ArrowUp") {
-
-        if (visible.length) {
-
-          event.preventDefault();
-
-          setActive(
-            activeIndex <= 0
-              ? visible.length - 1
-              : activeIndex - 1
-          );
-
-        }
-
-        return;
-      }
-
-
-      if (event.key !== "Enter") {
-        return;
-      }
-
-
-      const target =
-        visible[
-          activeIndex >= 0
-            ? activeIndex
-            : 0
-        ];
-
-
-      if (target) {
+      if (
+        event.key === "Enter" &&
+        visibleModules.length
+      ) {
 
         event.preventDefault();
 
-        window.location.href =
-          target.href;
+        openModule(
+          visibleModules[0]
+        );
 
       }
 
@@ -958,6 +867,9 @@ function bindOfficerModuleSearch() {
   );
 
 
+  /*
+   * Clicking search result.
+   */
   results.addEventListener(
     "click",
     (event) => {
@@ -973,34 +885,36 @@ function bindOfficerModuleSearch() {
       }
 
 
-      const item =
-        visible[
-          Number(
-            button.dataset.searchIndex
-          )
-        ];
+      const index =
+        Number(
+          button.dataset.searchIndex
+        );
 
 
-      if (item) {
-
-        window.location.href =
-          item.href;
-
-      }
+      openModule(
+        visibleModules[index]
+      );
 
     }
   );
 
 
+  /*
+   * Clear search.
+   */
   clearBtn?.addEventListener(
     "click",
-    () => {
+    (event) => {
+
+      event.preventDefault();
+
+      event.stopPropagation();
 
       input.value = "";
 
       clearBtn.hidden = true;
 
-      closeResults();
+      renderResults();
 
       input.focus();
 
@@ -1008,11 +922,16 @@ function bindOfficerModuleSearch() {
   );
 
 
+  /*
+   * Close search if tapping elsewhere.
+   */
   document.addEventListener(
     "pointerdown",
     (event) => {
 
-      if (!box.contains(event.target)) {
+      if (
+        !box.contains(event.target)
+      ) {
 
         closeResults();
 
@@ -1021,7 +940,6 @@ function bindOfficerModuleSearch() {
     }
   );
 }
-
 /* =========================================================
    INITIALIZATION
    ========================================================= */
